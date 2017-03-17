@@ -1,0 +1,1 @@
+/usr/bin/cc  -g   CMakeFiles/nouse.dir/dummy.c.o  -o nouse -rdynamic 

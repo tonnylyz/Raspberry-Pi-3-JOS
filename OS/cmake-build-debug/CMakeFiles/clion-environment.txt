@@ -1,0 +1,1 @@
+CMake: 3.6.3@/home/tonny/Apps/clion/bin/cmake/bin/cmake
