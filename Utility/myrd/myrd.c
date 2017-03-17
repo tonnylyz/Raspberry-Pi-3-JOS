@@ -1,8 +1,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
-#include <stdint.h>
-#include <inttypes.h>
+#include <linux/types.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Tonny LEUNG");
@@ -11,12 +10,12 @@ MODULE_VERSION("0.2");
 
 static int __init MyRD_init(void){
     printk(KERN_INFO "MyRD: Started.\n");
-    uint64_t coreid;
+    u32 coreid;
     __asm__ __volatile__ (
         "mrs %0, mpidr_el1"
         : "=r" (coreid)
     );
-    printk("Current core id: 0x" PRIx64 "\n", coreid);
+    printk("Current core id: 0x%8x\n", coreid);
     return 0;
 }
 
