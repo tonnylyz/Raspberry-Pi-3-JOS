@@ -1,6 +1,6 @@
 INCLUDES := -I../include/
 %.o: %.S
-	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+	$(CROSS)gcc $(CFLAGS) $(INCLUDES) -c $<
 .PHONY: clean
 all: start.o
 clean:

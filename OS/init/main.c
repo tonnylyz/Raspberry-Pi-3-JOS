@@ -1,65 +1,74 @@
+typedef unsigned int u32;
+extern void set_ptr(u32, u32);
+extern u32  get_ptr(u32);
+extern void empty_loop(u32);
 
-#define IO_BASE 0x3f000000
-#define GP_BASE (IO_BASE + 0x200000)
-#define MU_BASE (IO_BASE + 0x215000)
+#define GPFSEL1         0x3F200004
+#define GPSET0          0x3F20001C
+#define GPCLR0          0x3F200028
+#define GPPUD           0x3F200094
+#define GPPUDCLK0       0x3F200098
 
-#define AUX_ENB (*(volatile unsigned *)(MU_BASE + 0x04))
-#define MU_IO   (*(volatile unsigned *)(MU_BASE + 0x40))
-#define MU_LCR  (*(volatile unsigned *)(MU_BASE + 0x4c))
-#define MU_LSR  (*(volatile unsigned *)(MU_BASE + 0x54))
-#define MU_CNTL (*(volatile unsigned *)(MU_BASE + 0x60))
-#define MU_BAUD (*(volatile unsigned *)(MU_BASE + 0x68))
+#define AUX_ENABLES     0x3F215004
+#define AUX_MU_IO_REG   0x3F215040
+#define AUX_MU_IER_REG  0x3F215044
+#define AUX_MU_IIR_REG  0x3F215048
+#define AUX_MU_LCR_REG  0x3F21504C
+#define AUX_MU_MCR_REG  0x3F215050
+#define AUX_MU_LSR_REG  0x3F215054
+#define AUX_MU_MSR_REG  0x3F215058
+#define AUX_MU_SCRATCH  0x3F21505C
+#define AUX_MU_CNTL_REG 0x3F215060
+#define AUX_MU_STAT_REG 0x3F215064
+#define AUX_MU_BAUD_REG 0x3F215068
 
-#define GPFSEL1 (*(volatile unsigned *)(GP_BASE + 0x04))
-#define GPPUD   (*(volatile unsigned *)(GP_BASE + 0x94))
-#define GPPUDCLK0   (*(volatile unsigned *)(GP_BASE + 0x98))
+u32 uart_recv() {
+    while (1) {
+        if (get_ptr(AUX_MU_LSR_REG) & 0x01) break;
+    }
+    return (get_ptr(AUX_MU_IO_REG) & 0xFF);
+}
 
-static void init_uart(void) {
+void uart_send(u32 c) {
+    while (1) {
+        if (get_ptr(AUX_MU_LSR_REG) & 0x20) break;
+    }
+    set_ptr(AUX_MU_IO_REG, c);
+}
+
+void uart_init() {
+    u32 ra;
+    set_ptr(AUX_ENABLES, 1);
+    set_ptr(AUX_MU_IER_REG, 0);
+    set_ptr(AUX_MU_CNTL_REG, 0);
+    set_ptr(AUX_MU_LCR_REG, 3);
+    set_ptr(AUX_MU_MCR_REG, 0);
+    set_ptr(AUX_MU_IER_REG, 0);
+    set_ptr(AUX_MU_IIR_REG, 0xC6);
+    set_ptr(AUX_MU_BAUD_REG, 270);
+    ra = get_ptr(GPFSEL1);
+    ra &= ~(7 << 12); //gpio14
+    ra |= 2 << 12;    //alt5
+    ra &= ~(7 << 15); //gpio15make
+    ra |= 2 << 15;    //alt5
+    set_ptr(GPFSEL1, ra);
+    set_ptr(GPPUD, 0);
+    for (ra = 0; ra < 150; ra++) empty_loop(ra);
+    set_ptr(GPPUDCLK0, (1 << 14) | (1 << 15));
+    for (ra = 0; ra < 150; ra++) empty_loop(ra);
+    set_ptr(GPPUDCLK0, 0);
+    set_ptr(AUX_MU_CNTL_REG, 3);
+}
+
+int main() {
+    u32 ra;
+    uart_init();
     int i;
-
-    AUX_ENB |= 1;        /* Enable mini-uart */
-    MU_LCR = 3;        /* 8 bit.  */
-    MU_BAUD = 270;    /* 115200 baud.  */
-    GPFSEL1 &= ~((7 << 12) | (7 << 15));    /* GPIO14 & 15: alt5  */
-    GPFSEL1 |= (2 << 12) | (2 << 15);
-
-    /* Disable pull-up/down.  */
-    GPPUD = 0;
-
-    for (i = 0; i < 150; i++)
-            asm volatile ("nop");
-
-    GPPUDCLK0 = (2 << 14) | (2 << 15);
-
-    for (i = 0; i < 150; i++)
-            asm volatile ("nop");
-
-    GPPUDCLK0 = 0;
-
-    MU_CNTL = 3;        /* Enable Tx and Rx.  */
-}
-
-
-void raw_putc(char c) {
-    while (!(MU_LSR & 0x20));
-    MU_IO = c;
-}
-
-void putc(char c) {
-    if (c == '\n')
-        raw_putc('\r');
-    raw_putc(c);
-}
-
-void puts(const char *s) {
-    while (*s)
-        putc(*s++);
-}
-
-int main(void) {
-    init_uart();
-    while (1)
-        puts("Hello world!\n");
-
-    return 0;
+    for (i = 0; i < 1000; i++)
+        uart_send((u32)('.'));
+    while (1) {
+        ra = uart_recv();
+        if (ra == 0x0D) uart_send(0x0A);
+        uart_send(ra);
+    }
 }
