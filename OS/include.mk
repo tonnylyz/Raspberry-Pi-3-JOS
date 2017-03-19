@@ -1,2 +1,2 @@
-CROSS  := ~/linaro/bin/aarch64-none-elf-
+CROSS  := aarch64-none-elf-
 CFLAGS := -Wall -ffreestanding
