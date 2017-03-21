@@ -1,4 +1,4 @@
-.global __start
+.global _start
 
 /*
  * System start at 0x00080000
@@ -11,7 +11,6 @@ L0: wfe
     b   L0
 
 _start_master:
-    ldr x0, =0x1000000
-    mov sp, x0
+    mov sp, #0x00100000
     bl  main
 L1: b   L1
