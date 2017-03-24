@@ -45,6 +45,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/home/tonny/rpi-1/OS/include"/>
+					<Add directory="/home/tonny/rpi-1/OS/."/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed"/>
@@ -69,6 +70,7 @@
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/home/tonny/rpi-1/OS/include"/>
+					<Add directory="/home/tonny/rpi-1/OS/."/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed"/>

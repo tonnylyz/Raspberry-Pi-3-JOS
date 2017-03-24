@@ -6,5 +6,5 @@ C_FLAGS = -g
 
 C_DEFINES = 
 
-C_INCLUDES = -I/home/tonny/rpi-1/OS/include 
+C_INCLUDES = -I/home/tonny/rpi-1/OS/include -I/home/tonny/rpi-1/OS/. 
 

@@ -7,10 +7,11 @@ vmlinux_img   := kernel8.img
 
 link_script   := kernel.lds
 
-modules       := boot init
+modules       := boot drivers init lib
 objects       := $(boot_dir)/start.o \
-                 $(init_dir)/asm.o \
-                 $(init_dir)/main.o
+                 $(init_dir)/*.o \
+                 $(drivers_dir)/uart.o \
+                 $(lib_dir)/*.o
 
 .PHONY: all $(modules) clean
 

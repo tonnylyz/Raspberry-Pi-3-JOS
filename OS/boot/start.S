@@ -1,11 +1,5 @@
 .globl _start
-/*
 
-_start:
-    b   _start_mask
-.space 0x7ffc,0
-
-*/
 _start:
     mrs x0, mpidr_el1
     mov x1, #0xC1000000
