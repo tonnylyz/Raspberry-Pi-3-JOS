@@ -3,7 +3,7 @@ boot_dir      := boot
 init_dir      := init
 lib_dir       := lib
 vmlinux_elf   := kernel.elf
-vmlinux_img   := kernel8.img
+vmlinux_img   := kernel7.img
 
 link_script   := kernel.lds
 
@@ -17,7 +17,7 @@ objects       := $(boot_dir)/start.o \
 all: $(modules) vmlinux
 
 vmlinux: $(modules)
-	$(CROSS)ld -o $(vmlinux_elf) -T $(link_script) $(objects)
+	$(CROSS)ld -o $(vmlinux_elf) -e _start -T$(link_script) $(objects)
 	$(CROSS)objcopy $(vmlinux_elf) -O binary $(vmlinux_img)
 
 $(modules):

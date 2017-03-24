@@ -1,6 +1,6 @@
 .global get_ptr
 get_ptr:
-    ldr x0, [x0]
+    ldr w0, [x0]
     ret
 
 .global set_ptr

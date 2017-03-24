@@ -22,16 +22,20 @@ extern void empty_loop(u32);
 #define AUX_MU_STAT_REG 0x3F215064
 #define AUX_MU_BAUD_REG 0x3F215068
 
+u32 uart_lsr() {
+    return get_ptr(AUX_MU_LSR_REG);
+}
+
 u32 uart_recv() {
     while (1) {
-        if (get_ptr(AUX_MU_LSR_REG) & 0x01) break;
+        if (uart_lsr() & 0x01) break;
     }
     return (get_ptr(AUX_MU_IO_REG) & 0xFF);
 }
 
 void uart_send(u32 c) {
     while (1) {
-        if (get_ptr(AUX_MU_LSR_REG) & 0x20) break;
+        if (uart_lsr() & 0x20) break;
     }
     set_ptr(AUX_MU_IO_REG, c);
 }
@@ -64,8 +68,23 @@ int main() {
     u32 ra;
     uart_init();
     int i;
-    for (i = 0; i < 1000; i++)
+    
+    for (i = 0; i < 10; i++)
         uart_send((u32)('.'));
+    uart_send(0x0D);
+    uart_send(0x0A);
+    for (i = 0; i < 10; i++)
+        uart_send((u32)('.'));
+    uart_send(0x0D);
+    uart_send(0x0A);
+    for (i = 0; i < 10; i++)
+        uart_send((u32)('.'));
+    uart_send(0x0D);
+    uart_send(0x0A);
+    for (i = 0; i < 10; i++)
+        uart_send((u32)('.'));
+    uart_send(0x0D);
+    uart_send(0x0A);
     while (1) {
         ra = uart_recv();
         if (ra == 0x0D) uart_send(0x0A);
