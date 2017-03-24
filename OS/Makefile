@@ -3,7 +3,7 @@ boot_dir      := boot
 init_dir      := init
 lib_dir       := lib
 vmlinux_elf   := kernel.elf
-vmlinux_img   := kernel7.img
+vmlinux_img   := kernel8.img
 
 link_script   := kernel.lds
 
