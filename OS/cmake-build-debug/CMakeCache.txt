@@ -179,12 +179,6 @@ ProcessorCount_cmd_getconf:FILEPATH=/usr/bin/getconf
 ProcessorCount_cmd_sysctl:FILEPATH=/usr/sbin/sysctl
 
 //Value Computed by CMake
-oslab2_BINARY_DIR:STATIC=/home/tonny/rpi-1/OS/cmake-build-debug
-
-//Value Computed by CMake
-oslab2_SOURCE_DIR:STATIC=/home/tonny/rpi-1/OS
-
-//Value Computed by CMake
 oslabpi_BINARY_DIR:STATIC=/home/tonny/rpi-1/OS/cmake-build-debug
 
 //Value Computed by CMake
@@ -202,9 +196,9 @@ CMAKE_CACHEFILE_DIR:INTERNAL=/home/tonny/rpi-1/OS/cmake-build-debug
 //Major version of cmake used to create the current loaded cache
 CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
-CMAKE_CACHE_MINOR_VERSION:INTERNAL=6
+CMAKE_CACHE_MINOR_VERSION:INTERNAL=7
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=3
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=1
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -297,7 +291,7 @@ CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_RANLIB
 CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //Path to CMake installation.
-CMAKE_ROOT:INTERNAL=/home/tonny/Apps/clion/bin/cmake/share/cmake-3.6
+CMAKE_ROOT:INTERNAL=/home/tonny/Apps/clion/bin/cmake/share/cmake-3.7
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
 CMAKE_SHARED_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS_DEBUG

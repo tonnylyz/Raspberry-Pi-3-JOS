@@ -63,6 +63,7 @@ endif()
 
 
 
+
 set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "stdc++;m;c")
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/usr/lib64/gcc/x86_64-suse-linux/4.8;/usr/lib64;/lib64;/usr/x86_64-suse-linux/lib")
 set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

@@ -17,21 +17,21 @@
 					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/home/tonny/rpi-1/OS/cmake-build-debug"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="rebuild_cache">
 				<Option working_dir="/home/tonny/rpi-1/OS/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
 					<Build command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/tonny/rpi-1/OS/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
 					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -46,14 +46,14 @@
 				<Compiler>
 					<Add directory="/home/tonny/rpi-1/OS/include"/>
 					<Add directory="/home/tonny/rpi-1/OS/."/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/x86_64-suse-linux"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../x86_64-suse-linux/include"/>
 					<Add directory="/usr/include"/>
-					<Add directory="/usr/include/c++/4.8"/>
-					<Add directory="/usr/include/c++/4.8/x86_64-suse-linux"/>
-					<Add directory="/usr/include/c++/4.8/backward"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 nouse"/>
@@ -71,14 +71,14 @@
 				<Compiler>
 					<Add directory="/home/tonny/rpi-1/OS/include"/>
 					<Add directory="/home/tonny/rpi-1/OS/."/>
+					<Add directory="/usr/include/c++/4.8"/>
+					<Add directory="/usr/include/c++/4.8/x86_64-suse-linux"/>
+					<Add directory="/usr/include/c++/4.8/backward"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/include-fixed"/>
 					<Add directory="/usr/lib64/gcc/x86_64-suse-linux/4.8/../../../../x86_64-suse-linux/include"/>
 					<Add directory="/usr/include"/>
-					<Add directory="/usr/include/c++/4.8"/>
-					<Add directory="/usr/include/c++/4.8/x86_64-suse-linux"/>
-					<Add directory="/usr/include/c++/4.8/backward"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/gmake -j8 -f &quot;/home/tonny/rpi-1/OS/cmake-build-debug/Makefile&quot;  VERBOSE=1 nouse/fast"/>
