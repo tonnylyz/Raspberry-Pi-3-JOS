@@ -2,16 +2,18 @@ drivers_dir   := drivers
 boot_dir      := boot
 init_dir      := init
 lib_dir       := lib
+mm_dir        := mm
 vmlinux_elf   := kernel.elf
 vmlinux_img   := kernel8.img
 
 link_script   := kernel.lds
 
-modules       := boot drivers init lib
+modules       := boot drivers init lib mm
 objects       := $(boot_dir)/start.o \
                  $(init_dir)/*.o \
                  $(drivers_dir)/uart.o \
-                 $(lib_dir)/*.o
+                 $(lib_dir)/*.o \
+                 $(mm_dir)/pmap.o
 
 .PHONY: all $(modules) clean
 

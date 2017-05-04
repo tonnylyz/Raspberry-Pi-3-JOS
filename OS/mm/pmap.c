@@ -1,40 +1,9 @@
-#include "mmu.h"
 #include "pmap.h"
-#include "queue.h"
-#include "printf.h"
-#include "error.h"
-
-
-/* These variables are set by mips_detect_memory() */
-u_long maxpa;            /* Maximum physical address */
-u_long npage;            /* Amount of memory(in pages) */
-u_long basemem;          /* Amount of base memory(in bytes) */
-u_long extmem;           /* Amount of extended memory(in bytes) */
-
-Pde *boot_pgdir;
 
 struct Page *pages;
 static u_long freemem;
 
 static struct Page_list page_free_list;    /* Free list of physical pages */
-
-/* Overview:
- 	Initialize basemem and npage.
- 	Set basemem to be 1GB, and calculate corresponding npage value.*/
-void detect_memory() {
-    /* Step 1: Initialize basemem.
-     * (When use real computer, CMOS tells us how many kilobytes there are). */
-    maxpa = 0x40000000; // 64 megabytes
-    npage = 0x00004000; // 16 kilo pages
-    basemem = 0x04000000; // 64 megabytes
-    extmem = 0x00000000; // N/A
-
-    // Step 2: Calculate corresponding npage value.
-
-    printf("Physical memory: %dK available, ", (int) (maxpa / 1024));
-    printf("base = %dK, extended = %dK\n", (int) (basemem / 1024),
-           (int) (extmem / 1024));
-}
 
 /* Overview:
  	Allocate `n` bytes physical memory with alignment `align`, if `clear` is set, clear the
@@ -44,15 +13,11 @@ void detect_memory() {
    Post-Condition:
 	If we're out of memory, should panic, else return this address of memory we have allocated.*/
 static void *alloc(u_int n, u_int align, int clear) {
-    extern char end[];
-    // This value is from scse0_3.lds
-    // 0x80400000
-
     u_long alloced_mem;
     /* Initialize `freemem` if this is the first time. The first virtual address that the
      * linker did *not* assign to any kernel code or global variables. */
     if (freemem == 0) {
-        freemem = (u_long) end;
+        freemem = KSTACKTOP;
     }
 
     /* Step 1: Round up `freemem` up to be aligned properly */
@@ -63,12 +28,6 @@ static void *alloc(u_int n, u_int align, int clear) {
 
     /* Step 3: Increase `freemem` to record allocation. */
     freemem = freemem + n;
-
-    // We're out of memory, PANIC !!
-    if (PADDR(freemem) >= maxpa) {
-        panic("out of memorty\n");
-        return (void *) -E_NO_MEM;
-    }
 
     /* Step 4: Clear allocated chunk if parameter `clear` is set. */
     if (clear) {
@@ -145,38 +104,18 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm) {
 
    Hint:
     You can get more details about `UPAGES` and `UENVS` in include/mmu.h. */
-void mips_vm_init() {
-    extern char end[];
-    extern int mCONTEXT;
-    extern struct Env *envs;
+void vm_init() {
+    //extern int mCONTEXT; // TODO: Place PGD (PDE Page Directory Entry)
 
-    // Pde == u_long used as pointer
     Pde *pgdir;
     u_int n;
-
-    /* Step 1: Allocate a page for page directory(first level page table). */
     pgdir = alloc(BY2PG, BY2PG, 1);
-    printf("to memory %x for struct page directory.\n", freemem);
-    mCONTEXT = (int) pgdir;
-
     boot_pgdir = pgdir;
+    pages = (struct Page *) alloc(NPAGE * sizeof(struct Page), BY2PG, 1);
+    n = ROUND(NPAGE * sizeof(struct Page), BY2PG);
+    //boot_map_segment(pgdir, UPAGES, n, PADDR(pages), PTE_R);
 
-    /* Step 2: Allocate proper size of physical memory for global array `pages`,
-     * for physical memory management. Then, map virtual address `UPAGES` to
-     * physical address `pages` allocated before. For consideration of alignment,
-     * you should round up the memory size before map. */
-    pages = (struct Page *) alloc(npage * sizeof(struct Page), BY2PG, 1);
-    printf("to memory %x for struct Pages.\n", freemem);
-    n = ROUND(npage * sizeof(struct Page), BY2PG);
-    boot_map_segment(pgdir, UPAGES, n, PADDR(pages), PTE_R);
-
-    /* Step 3, Allocate proper size of physical memory for global array `envs`,
-     * for process management. Then map the physical address to `UENVS`. */
-    envs = (struct Env *) alloc(NENV * sizeof(struct Env), BY2PG, 1);
-    n = ROUND(NENV * sizeof(struct Env), BY2PG);
-    boot_map_segment(pgdir, UENVS, n, PADDR(envs), PTE_R);
-
-    printf("pmap.c:\t mips vm init success\n");
+    printf("pmap.c:\t vm init success\n");
 }
 
 /*Overview:
@@ -196,14 +135,14 @@ void page_init(void) {
     /* Step 3: Mark all memory below `freemem` as used(set `pp_ref`
      * filed to 1) */
 
-    u_int used_index = PADDR(freemem) >> 12;
+    u_int used_index = VPN(freemem);
 
     u_int i;
     for (i = 0; i < used_index; i++) {
         pages[i].pp_ref = 1;
     }
     /* Step 4: Mark the other memory as free. */
-    for (i = used_index; i < npage; i++) {
+    for (i = used_index; i < NPAGE; i++) {
         pages[i].pp_ref = 0;
         LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
     }
@@ -327,7 +266,6 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
     Pte *pgtable_entry;
     PERM = perm | PTE_V;
 
-    /* Step 1: Get corresponding page table entry. */
     pgdir_walk(pgdir, va, 0, &pgtable_entry);
 
     if (pgtable_entry != 0 && (*pgtable_entry & PTE_V) != 0) {
@@ -339,15 +277,10 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
             return 0;
         }
     }
-
-    /* Step 2: Update TLB. */
     tlb_invalidate(pgdir, va);
-
-    /* Step 3: Do check, re-get page table entry to validate the insertion. */
     if (pgdir_walk(pgdir, va, 1, &pgtable_entry) != 0) {
         return -E_NO_MEM;    // panic ("page insert failed .\n");
     }
-
     *pgtable_entry = (page2pa(pp) | PERM);
     pp->pp_ref++;
     return 0;
@@ -362,26 +295,17 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
 struct Page *page_lookup(Pde *pgdir, u_long va, Pte **ppte) {
     struct Page *ppage;
     Pte *pte;
-
-    /* Step 1: Get the page table entry. */
     pgdir_walk(pgdir, va, 0, &pte);
-
-    /* Hint: Check if the page table entry doesn't exist or is not valid. */
     if (pte == 0) {
         return 0;
     }
     if ((*pte & PTE_V) == 0) {
         return 0;    //the page is not in memory.
     }
-
-    /* Step 2: Get the corresponding Page struct. */
-
-    /* Hint: Use function `pa2page`, defined in include/pmap.h . */
     ppage = pa2page(*pte);
     if (ppte) {
         *ppte = pte;
     }
-
     return ppage;
 }
 
@@ -398,23 +322,14 @@ void page_decref(struct Page *pp) {
 void page_remove(Pde *pgdir, u_long va) {
     Pte *pagetable_entry;
     struct Page *ppage;
-
-    /* Step 1: Get the page table entry, and check if the page table entry is valid. */
     ppage = page_lookup(pgdir, va, &pagetable_entry);
-
     if (ppage == 0) {
         return;
     }
-
-    /* Step 2: Decrease `pp_ref` and decide if it's necessary to free this page. */
-
-    /* Hint: When there's no virtual address mapped to this page, release it. */
     ppage->pp_ref--;
     if (ppage->pp_ref == 0) {
         page_free(ppage);
     }
-
-    /* Step 3: Update TLB. */
     *pagetable_entry = 0;
     tlb_invalidate(pgdir, va);
     return;
@@ -424,157 +339,32 @@ void page_remove(Pde *pgdir, u_long va) {
 // 	Update TLB.
 void
 tlb_invalidate(Pde *pgdir, u_long va) {
-    if (curenv) {
-        tlb_out(PTE_ADDR(va) | GET_ENV_ASID(curenv->env_id));
-    } else {
-        tlb_out(PTE_ADDR(va));
+    // TODO: Implement tlb_invalidate
+}
+
+void bcopy(const void *src, void *dst, size_t len) {
+    void *max;
+    max = dst + len;
+    while (dst + 3 < max) {
+        *(int *) dst = *(int *) src;
+        dst += 4;
+        src += 4;
+    }
+    while (dst < max) {
+        *(char *) dst = *(char *) src;
+        dst += 1;
+        src += 1;
     }
 }
 
-
-void
-page_check(void) {
-    struct Page *pp, *pp0, *pp1, *pp2;
-    struct Page_list fl;
-
-    // should be able to allocate three pages
-    pp0 = pp1 = pp2 = 0;
-    assert(page_alloc(&pp0) == 0);
-    count_page();
-    assert(page_alloc(&pp1) == 0);
-    count_page();
-    assert(page_alloc(&pp2) == 0);
-
-    count_page();
-
-    assert(pp0);
-    assert(pp1 && pp1 != pp0);
-    assert(pp2 && pp2 != pp1 && pp2 != pp0);
-
-    // temporarily steal the rest of the free pages
-    fl = page_free_list;
-    // now this page_free list must be empty!!!!
-    LIST_INIT(&page_free_list);
-
-    // should be no free memory
-    assert(page_alloc(&pp) == -E_NO_MEM);
-
-    // there is no free memory, so we can't allocate a page table
-    assert(page_insert(boot_pgdir, pp1, 0x0, 0) < 0);
-
-    // free pp0 and try again: pp0 should be used for page table
-    page_free(pp0);
-    assert(page_insert(boot_pgdir, pp1, 0x0, 0) == 0);
-    assert(PTE_ADDR(boot_pgdir[0]) == page2pa(pp0));
-
-    count_page();
-
-    printf("va2pa(boot_pgdir, 0x0) is %x\n", va2pa(boot_pgdir, 0x0));
-    printf("page2pa(pp1) is %x\n", page2pa(pp1));
-
-    assert(va2pa(boot_pgdir, 0x0) == page2pa(pp1));
-    assert(pp1->pp_ref == 1);
-
-    // should be able to map pp2 at BY2PG because pp0 is already allocated for page table
-    assert(page_insert(boot_pgdir, pp2, BY2PG, 0) == 0);
-    assert(va2pa(boot_pgdir, BY2PG) == page2pa(pp2));
-    assert(pp2->pp_ref == 1);
-
-    count_page();
-
-    // should be no free memory
-    assert(page_alloc(&pp) == -E_NO_MEM);
-
-    printf("start page_insert\n");
-    // should be able to map pp2 at BY2PG because it's already there
-    assert(page_insert(boot_pgdir, pp2, BY2PG, 0) == 0);
-    assert(va2pa(boot_pgdir, BY2PG) == page2pa(pp2));
-    assert(pp2->pp_ref == 1);
-
-    // pp2 should NOT be on the free list
-    // could happen in ref counts are handled sloppily in page_insert
-    assert(page_alloc(&pp) == -E_NO_MEM);
-
-    // should not be able to map at PDMAP because need free page for page table
-    assert(page_insert(boot_pgdir, pp0, PDMAP, 0) < 0);
-
-    // insert pp1 at BY2PG (replacing pp2)
-    assert(page_insert(boot_pgdir, pp1, BY2PG, 0) == 0);
-
-    // should have pp1 at both 0 and BY2PG, pp2 nowhere, ...
-    assert(va2pa(boot_pgdir, 0x0) == page2pa(pp1));
-    assert(va2pa(boot_pgdir, BY2PG) == page2pa(pp1));
-    // ... and ref counts should reflect this
-    assert(pp1->pp_ref == 2);
-    printf("pp2->pp_ref %d\n", pp2->pp_ref);
-    assert(pp2->pp_ref == 0);
-    printf("end page_insert\n");
-
-    // pp2 should be returned by page_alloc
-    assert(page_alloc(&pp) == 0 && pp == pp2);
-
-    // unmapping pp1 at 0 should keep pp1 at BY2PG
-    page_remove(boot_pgdir, 0x0);
-    assert(va2pa(boot_pgdir, 0x0) == ~0);
-    assert(va2pa(boot_pgdir, BY2PG) == page2pa(pp1));
-    assert(pp1->pp_ref == 1);
-    assert(pp2->pp_ref == 0);
-
-    // unmapping pp1 at BY2PG should free it
-    page_remove(boot_pgdir, BY2PG);
-    assert(va2pa(boot_pgdir, 0x0) == ~0);
-    assert(va2pa(boot_pgdir, BY2PG) == ~0);
-    assert(pp1->pp_ref == 0);
-    assert(pp2->pp_ref == 0);
-
-    // so it should be returned by page_alloc
-    assert(page_alloc(&pp) == 0 && pp == pp1);
-
-    // should be no free memory
-    assert(page_alloc(&pp) == -E_NO_MEM);
-
-    // forcibly take pp0 back
-    assert(PTE_ADDR(boot_pgdir[0]) == page2pa(pp0));
-    boot_pgdir[0] = 0;
-    assert(pp0->pp_ref == 1);
-    pp0->pp_ref = 0;
-
-    // give free list back
-    page_free_list = fl;
-
-    // free the pages we took
-    page_free(pp0);
-    page_free(pp1);
-    page_free(pp2);
-
-    count_page();
-
-    printf("page_check() succeeded!\n");
+void bzero(void *b, size_t len) {
+    void *max;
+    max = b + len;
+    while (b + 3 < max){
+        *(int *)b = 0;
+        b+=4;
+    }
+    while (b < max){
+        *(char *)b++ = 0;
+    }
 }
-
-void pageout(int va, int context) {
-    u_long r;
-    struct Page *p = NULL;
-
-    if (context < 0x80000000) {
-        panic("tlb refill and alloc error!");
-    }
-
-    if ((va > 0x7f400000) && (va < 0x7f800000)) {
-        panic(">>>>>>>>>>>>>>>>>>>>>>it's env's zone");
-    }
-
-    if (va < 0x10000) {
-        panic("^^^^^^TOO LOW^^^^^^^^^");
-    }
-
-    if ((r = page_alloc(&p)) < 0) {
-        panic("page alloc error!");
-    }
-
-    p->pp_ref++;
-
-    page_insert((Pde *) context, p, VA2PFN(va), PTE_R);
-    printf("pageout:\t@@@___0x%x___@@@  ins a page \n", va);
-}
-

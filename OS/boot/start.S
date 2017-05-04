@@ -8,7 +8,7 @@ _start:
     b   L0
 
 _start_master:
-    mov sp, #0x08000000
+    mov sp, #0x400000
     bl  main
 
 L0:

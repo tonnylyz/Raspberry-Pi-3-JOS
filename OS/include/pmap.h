@@ -1,91 +1,45 @@
 #ifndef OSLABPI_PMAP_H
 #define OSLABPI_PMAP_H
 
+#include "mmu.h"
 #include "types.h"
 #include "queue.h"
-#include "mmu.h"
 #include "printf.h"
+#include "error.h"
 
+Pde *boot_pgdir;
 
 LIST_HEAD(Page_list, Page);
 typedef LIST_ENTRY(Page) Page_LIST_entry_t;
-
 struct Page {
-    Page_LIST_entry_t pp_link;    /* free list link */
-
-    // Ref is the count of pointers (usually in page table entries)
-    // to this page.  This only holds for pages allocated using
-    // page_alloc.  Pages allocated at boot time using pmap.c's "alloc"
-    // do not have valid reference count fields.
-
+    Page_LIST_entry_t pp_link;
     u_short pp_ref;
 };
 
 extern struct Page *pages;
 
-static inline u_long
-page2ppn(struct Page *pp) {
-    return pp - pages;
+static inline size_t page2ppn(struct Page *pp) {
+    return (size_t)pp - (size_t)pages;
 }
 
-/* Get the physical address of Page 'pp'.
- */
-static inline u_long
-page2pa(struct Page *pp) {
+static inline size_t page2pa(struct Page *pp) {
     return page2ppn(pp) << PGSHIFT;
 }
 
-/* Get the Page struct whose physical address is 'pa'.
- */
-static inline struct Page *
-pa2page(u_long pa) {
-    if (PPN(pa) >= npage) {
+static inline struct Page * pa2page(u_long pa) {
+    if (PPN(pa) >= NPAGE) {
         panic("pa2page called with invalid pa: %x", pa);
     }
-
     return &pages[PPN(pa)];
 }
 
-/* Get the kernel virtual address of Page 'pp'.
- */
-static inline u_long
-page2kva(struct Page *pp) {
+static inline size_t page2kva(struct Page *pp) {
     return KADDR(page2pa(pp));
 }
 
-/* Transform the virtual address 'va' to physical address.
- */
-// TODO: va2pa port to rpi!
-static inline u_long
-va2pa(Pde *pgdir, u_long va) {
-    Pte *p;
-
-    pgdir = &pgdir[PDX(va)];
-
-    if (!(*pgdir & PTE_V)) {
-        return ~0;
-    }
-
-    p = (Pte *) KADDR(PTE_ADDR(*pgdir));
-
-    if (!(p[PTX(va)] & PTE_V)) {
-        return ~0;
-    }
-
-    return PTE_ADDR(p[PTX(va)]);
-}
-
-/********** functions for memory management(see implementation in mm/pmap.c). ***********/
-
-void mips_detect_memory();
-
-void mips_vm_init();
-
-void mips_init();
+void vm_init();
 
 void page_init(void);
-
-void page_check();
 
 int page_alloc(struct Page **pp);
 
@@ -104,7 +58,5 @@ void page_remove(Pde *pgdir, u_long va);
 void tlb_invalidate(Pde *pgdir, u_long va);
 
 void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm);
-
-extern struct Page *pages;
 
 #endif //OSLABPI_PMAP_H
