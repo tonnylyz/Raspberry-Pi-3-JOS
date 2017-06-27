@@ -1,6 +1,10 @@
-INCLUDES := -I../include/
+INCLUDES := -I./ -I../ -I../include/
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+
 %.o: %.S
-	$(CROSS)gcc $(CFLAGS) $(INCLUDES) -c $<
+	$(CC) $(CFLAGS) $(INCLUDES) -c $<
+
 .PHONY: clean
 all: start.o vm.o
 clean:

@@ -3,20 +3,31 @@
 
 #include "types.h"
 
-#define BY2PG		4096
-#define PDMAP		(4 * 1024 * 1024)	// bytes mapped by a page directory entry
-#define PDSHIFT		30
-#define PMSHIFT		21
-#define PGSHIFT		12
+#define BY2PG        4096
+#define PDMAP        (4 * 1024 * 1024)    // bytes mapped by a page directory entry
+#define PDSHIFT        30
+#define PMSHIFT        21
+#define PGSHIFT        12
 
-#define PGX(va)		((((size_t)(va))>>39) & 0x01)
-#define PDX(va)		((((size_t)(va))>>30) & 0x1FF)
-#define PMX(va)		((((size_t)(va))>>21) & 0x1FF)
-#define PTX(va)		((((size_t)(va))>>12) & 0x1FF)
-#define PTE_ADDR(pte)	((size_t)(pte)& 0xFFFFFFF000)
 
-#define PPN(va)		(((size_t)(va)) >> 12)
-#define VPN(va)		(((size_t)(va) & 0xFFFFFFFFFF) >> 12)
+#define PGX(va) ((((u_long)(va)) >> 39) & 0x01)
+#define PDX(va) ((((u_long)(va)) >> 30) & 0x01FF)
+#define PMX(va) ((((u_long)(va)) >> 21) & 0x01FF)
+#define PTX(va) ((((u_long)(va)) >> 12) & 0x01FF)
+
+#define PTE_ADDR(pte) ((u_long)(pte)& 0xFFFFFFF000)
+
+#define PPN(va) (((u_long)(va)) >> 12)
+#define VPN(va) (((u_long)(va) & 0xFFFFFFFFFF) >> 12)
+
+#define TIMESTACKTOP (0xFFFFFF0000000000uL + 0x01751000uL)
+#define KSTACKTOP    (0xFFFFFF0000000000uL + 0x01000000uL)
+#define KERNBASE     (0xFFFFFF0000000000uL + 0x00080000uL)
+#define KERNEL_PGDIR (0xFFFFFF0000000000uL + 0x01000000uL)
+#define KERNEL_PAGES (0xFFFFFF0000000000uL + 0x01400000uL)
+#define KERNEL_ENVS  (0xFFFFFF0000000000uL + 0x01700000uL)
+
+#define USTACKTOP    (0x80000000)
 
 #define PTE_V                     0x3 << 0    // Table Entry Valid bit
 #define PBE_V                     0x1 << 0    // Block Entry Valid bit
@@ -36,12 +47,8 @@
 #define ATTRINDX_COHERENT           2 << 2 // Device-nGnRnE
 
 
-#define KERNBASE    0xffffff0000080000
-#define KSTACKTOP   0xffffff0001000000
-#define ULIM        0xffffff0000000000
-
 #define NPAGE       0x40000
-#define MAXPA       0x40000000
+#define MAXPA       0x20000000
 
 
 typedef u_long Pge;
@@ -49,31 +56,10 @@ typedef u_long Pde;
 typedef u_long Pme;
 typedef u_long Pte;
 
-// translates from kernel virtual address to physical address.
-#define PADDR(kva)                      \
-({                                      \
-u_long __a = (u_long) (kva);              \
-    if (__a < ULIM)                       \
-        panic("PADDR called with invalid kva %08lx", __a); \
-    __a - ULIM;                           \
-})
 
-// translates from physical address to kernel virtual address.
-#define KADDR(pa)                       \
-({                                      \
-    u_long __ppn = PPN(pa);               \
-    if (__ppn >= NPAGE)                   \
-        panic("KADDR called with invalid pa %08lx", (u_long)pa); \
-    (pa) + ULIM;                        \
-})
+#define KADDR(pa) ((u_long)(pa) | 0xFFFFFF0000000000)
 
-#define assert(x)	                    \
-do {	if (!(x)) panic("assertion failed: %s", #x); } while (0)
-
-#define TRUP(_p)   						\
-({								        \
-    register typeof((_p)) __m_p = (_p); \
-    (u_int) __m_p > ULIM ? (typeof(_p)) ULIM : __m_p; \
-})
+#define assert(x)                        \
+do {    if (!(x)) panic("assertion failed: %s", #x); } while (0)
 
 #endif //OSLABPI_MMU_H

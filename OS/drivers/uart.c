@@ -43,8 +43,8 @@ void uart_init() {
 }
 
 void printcharc(char c) {
-    if (c == 0x0D) {
-        uart_send(0x0A);
+    if (c == '\n') {
+        uart_send('\r');
     }
     uart_send(c);
 }

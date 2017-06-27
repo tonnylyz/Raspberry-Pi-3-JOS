@@ -9,7 +9,7 @@ vmlinux_img   := kernel8.img
 link_script   := kernel.lds
 
 modules       := boot drivers init lib mm
-objects       := $(boot_dir)/start.o \
+objects       := $(boot_dir)/*.o \
                  $(init_dir)/*.o \
                  $(drivers_dir)/uart.o \
                  $(lib_dir)/*.o \
@@ -31,6 +31,6 @@ clean:
 		do \
 			$(MAKE) --directory=$$d clean; \
 		done; \
-	rm -rf *.o *~ $(vmlinux_elf) $(vmlinux_img)
+	rm -rf *.o *~ $(vmlinux_elf)
 
 include include.mk

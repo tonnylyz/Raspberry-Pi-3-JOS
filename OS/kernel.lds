@@ -2,7 +2,7 @@ SECTIONS
 {
     . = 0x00080000;
     init : {
-        boot/init.o
+        boot/start.o
         boot/vm.o
     }
     _init_end = ABSOLUTE(.);
@@ -10,7 +10,9 @@ SECTIONS
         init/main.o
         *(.text*)
     }
-    .bss  : { *(.bss*)  }
+    .bss : {
+        *(.bss*)
+    }
     .rodata : {
         *(.rodata*)
     }

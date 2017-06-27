@@ -11,9 +11,43 @@ _start:
 
 _start_master:
 // Set kernel stack
-    mov sp, #0x400000
+    ldr x0, =0x1000000
+    mov sp, x0
+
 // Initialize vm
     bl  vm_init
+
+// Go to EL1
+
+    mrs x0, currentel        // check if already in el1
+    cmp x0, #4
+    beq L1
+
+    ldr x0, =0xffffff0001000000
+    msr sp_el1, x0           // init the stack of el1
+
+    // disable coprocessor traps
+    mov x0, #0x33ff
+    msr cptr_el2, x0         // disable coprocessor traps to el2
+    msr hstr_el2, xzr        // disable coprocessor traps to el2
+    mov x0, #3 << 20
+    msr cpacr_el1, x0        // enable fp/simd at el1
+
+    // initialize hcr_el2
+    mov x0, #(1 << 31)
+    msr hcr_el2, x0          // set el1 to 64 bit
+    mov x0, #0x0800
+    movk x0, #0x30d0, lsl #16
+    msr sctlr_el1, x0
+
+    // return to the el1_sp1 mode from el2
+    mov x0, #0x5
+    msr spsr_el2, x0         // el1_sp1 with DAIF = 0
+    adr x0, L1
+    msr elr_el2, x0
+    eret
+
+L1:
 // Enable instruction cache
     mrs x0, sctlr_el1
     orr x0, x0, #(1 << 12)
@@ -42,6 +76,7 @@ _start_master:
     orr x2, x2, x3
     msr tcr_el1, x2
     isb
+
 // GO to main
     ldr x5, =main
     mrs x3, sctlr_el1
