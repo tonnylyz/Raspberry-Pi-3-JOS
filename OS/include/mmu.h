@@ -8,24 +8,43 @@
 #define PDSHIFT		30
 #define PMSHIFT		21
 #define PGSHIFT		12
+
+#define PGX(va)		((((size_t)(va))>>39) & 0x01)
 #define PDX(va)		((((size_t)(va))>>30) & 0x1FF)
 #define PMX(va)		((((size_t)(va))>>21) & 0x1FF)
 #define PTX(va)		((((size_t)(va))>>12) & 0x1FF)
-#define PTE_ADDR(pte)	((size_t)(pte)&~0xFFF)
+#define PTE_ADDR(pte)	((size_t)(pte)& 0xFFFFFFF000)
 
-#define PPN(va)		((((size_t)(va))>>12) & 0x7FFFFFF) // 27 bit
-#define VPN(va)		PPN(va)
+#define PPN(va)		(((size_t)(va)) >> 12)
+#define VPN(va)		(((size_t)(va) & 0xFFFFFFFFFF) >> 12)
 
-#define PTE_V		0x0200	// Valid bit
-#define PTE_R		0x0400	// Dirty bit ,'0' means only read ,otherwise make interrupt
+#define PTE_V                     0x3 << 0    // Table Entry Valid bit
+#define PBE_V                     0x1 << 0    // Block Entry Valid bit
+#define ATTRIB_AP_RW_EL1          0x0 << 6
+#define ATTRIB_AP_RW_ALL          0x1 << 6
+#define ATTRIB_AP_RO_EL1          0x2 << 6
+#define ATTRIB_AP_RO_ALL          0x3 << 6
+#define ATTRIB_SH_NON_SHAREABLE   0x0 << 8
+#define ATTRIB_SH_OUTER_SHAREABLE 0x2 << 8
+#define ATTRIB_SH_INNER_SHAREABLE 0x3 << 8
+#define AF                        0x1 << 10
+#define PXN                       0x0 << 53
+#define UXN                       0x1UL << 54
 
-#define KERNBASE    0xffffff8000080000
-#define KSTACKTOP   0xffffff8000400000
-#define ULIM        0xffffff8000000000
+#define ATTRINDX_NORMAL           0 << 2    // inner/outer write-back non-transient, non-allocating
+#define ATTRINDX_DEVICE           1 << 2    // Device-nGnRE
+#define ATTRINDX_COHERENT           2 << 2 // Device-nGnRnE
+
+
+#define KERNBASE    0xffffff0000080000
+#define KSTACKTOP   0xffffff0001000000
+#define ULIM        0xffffff0000000000
 
 #define NPAGE       0x40000
+#define MAXPA       0x40000000
 
 
+typedef u_long Pge;
 typedef u_long Pde;
 typedef u_long Pme;
 typedef u_long Pte;

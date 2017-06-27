@@ -3,10 +3,6 @@
 #include <pmap.h>
 
 void main() {
-    uart_init();
-    printf("System started!\n");
-
-    vm_init();
     page_init();
 
     char c;

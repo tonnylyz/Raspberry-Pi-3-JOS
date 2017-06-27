@@ -1,18 +1,18 @@
-/home/tonny/Apps/clion/bin/cmake/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/tonny/rpi-1/OS
--- The C compiler identification is GNU 4.8.5
--- The CXX compiler identification is GNU 4.8.5
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
+"C:\Program Files (x86)\JetBrains\CLion 2017.1\bin\cmake\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" C:\Users\me\Desktop\rpi-1\OS
+-- The C compiler identification is GNU 5.3.0
+-- The CXX compiler identification is GNU 5.3.0
+-- Check for working C compiler: D:/Program/MinGW/bin/gcc.exe
+-- Check for working C compiler: D:/Program/MinGW/bin/gcc.exe -- works
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
 -- Detecting C compile features
 -- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Check for working CXX compiler: D:/Program/MinGW/bin/g++.exe
+-- Check for working CXX compiler: D:/Program/MinGW/bin/g++.exe -- works
 -- Detecting CXX compiler ABI info
 -- Detecting CXX compiler ABI info - done
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/tonny/rpi-1/OS/cmake-build-debug
+-- Build files have been written to: C:/Users/me/Desktop/rpi-1/OS/cmake-build-debug
