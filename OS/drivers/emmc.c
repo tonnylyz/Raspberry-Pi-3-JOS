@@ -2,6 +2,194 @@
 #include <mbox.h>
 #include <printf.h>
 
+struct emmc_block_dev uni_emmc_bd;
+struct sd_scr uni_emmc_src;
+
+static char driver_name[] = "emmc";
+static char device_name[] = "emmc0";	// We use a single device name as there is only
+// one card slot in the RPi
+
+static volatile u32 mbox_buf[8];
+
+static u32 hci_ver = 0;
+static u32 capabilities_0 = 0;
+static u32 capabilities_1 = 0;
+
+static u32 emmc_base = EMMC_BASE;
+
+static char *sd_versions[] = { "unknown", "1.0 and 1.01", "1.10",
+                               "2.00", "3.0x", "4.xx" };
+
+#ifdef EMMC_DEBUG
+static char *err_irpts[] = { "CMD_TIMEOUT", "CMD_CRC", "CMD_END_BIT", "CMD_INDEX",
+                             "DATA_TIMEOUT", "DATA_CRC", "DATA_END_BIT", "CURRENT_LIMIT",
+                             "AUTO_CMD12", "ADMA", "TUNING", "RSVD" };
+#endif
+
+static u32 sd_commands[] = {
+        SD_CMD_INDEX(0),
+        SD_CMD_RESERVED(1),
+        SD_CMD_INDEX(2) | SD_RESP_R2,
+        SD_CMD_INDEX(3) | SD_RESP_R6,
+        SD_CMD_INDEX(4),
+        SD_CMD_INDEX(5) | SD_RESP_R4,
+        SD_CMD_INDEX(6) | SD_RESP_R1,
+        SD_CMD_INDEX(7) | SD_RESP_R1b,
+        SD_CMD_INDEX(8) | SD_RESP_R7,
+        SD_CMD_INDEX(9) | SD_RESP_R2,
+        SD_CMD_INDEX(10) | SD_RESP_R2,
+        SD_CMD_INDEX(11) | SD_RESP_R1,
+        SD_CMD_INDEX(12) | SD_RESP_R1b | SD_CMD_TYPE_ABORT,
+        SD_CMD_INDEX(13) | SD_RESP_R1,
+        SD_CMD_RESERVED(14),
+        SD_CMD_INDEX(15),
+        SD_CMD_INDEX(16) | SD_RESP_R1,
+        SD_CMD_INDEX(17) | SD_RESP_R1 | SD_DATA_READ,
+        SD_CMD_INDEX(18) | SD_RESP_R1 | SD_DATA_READ | SD_CMD_MULTI_BLOCK | SD_CMD_BLKCNT_EN,
+        SD_CMD_INDEX(19) | SD_RESP_R1 | SD_DATA_READ,
+        SD_CMD_INDEX(20) | SD_RESP_R1b,
+        SD_CMD_RESERVED(21),
+        SD_CMD_RESERVED(22),
+        SD_CMD_INDEX(23) | SD_RESP_R1,
+        SD_CMD_INDEX(24) | SD_RESP_R1 | SD_DATA_WRITE,
+        SD_CMD_INDEX(25) | SD_RESP_R1 | SD_DATA_WRITE | SD_CMD_MULTI_BLOCK | SD_CMD_BLKCNT_EN,
+        SD_CMD_RESERVED(26),
+        SD_CMD_INDEX(27) | SD_RESP_R1 | SD_DATA_WRITE,
+        SD_CMD_INDEX(28) | SD_RESP_R1b,
+        SD_CMD_INDEX(29) | SD_RESP_R1b,
+        SD_CMD_INDEX(30) | SD_RESP_R1 | SD_DATA_READ,
+        SD_CMD_RESERVED(31),
+        SD_CMD_INDEX(32) | SD_RESP_R1,
+        SD_CMD_INDEX(33) | SD_RESP_R1,
+        SD_CMD_RESERVED(34),
+        SD_CMD_RESERVED(35),
+        SD_CMD_RESERVED(36),
+        SD_CMD_RESERVED(37),
+        SD_CMD_INDEX(38) | SD_RESP_R1b,
+        SD_CMD_RESERVED(39),
+        SD_CMD_RESERVED(40),
+        SD_CMD_RESERVED(41),
+        SD_CMD_RESERVED(42) | SD_RESP_R1,
+        SD_CMD_RESERVED(43),
+        SD_CMD_RESERVED(44),
+        SD_CMD_RESERVED(45),
+        SD_CMD_RESERVED(46),
+        SD_CMD_RESERVED(47),
+        SD_CMD_RESERVED(48),
+        SD_CMD_RESERVED(49),
+        SD_CMD_RESERVED(50),
+        SD_CMD_RESERVED(51),
+        SD_CMD_RESERVED(52),
+        SD_CMD_RESERVED(53),
+        SD_CMD_RESERVED(54),
+        SD_CMD_INDEX(55) | SD_RESP_R1,
+        SD_CMD_INDEX(56) | SD_RESP_R1 | SD_CMD_ISDATA,
+        SD_CMD_RESERVED(57),
+        SD_CMD_RESERVED(58),
+        SD_CMD_RESERVED(59),
+        SD_CMD_RESERVED(60),
+        SD_CMD_RESERVED(61),
+        SD_CMD_RESERVED(62),
+        SD_CMD_RESERVED(63)
+};
+
+static u32 sd_acommands[] = {
+        SD_CMD_RESERVED(0),
+        SD_CMD_RESERVED(1),
+        SD_CMD_RESERVED(2),
+        SD_CMD_RESERVED(3),
+        SD_CMD_RESERVED(4),
+        SD_CMD_RESERVED(5),
+        SD_CMD_INDEX(6) | SD_RESP_R1,
+        SD_CMD_RESERVED(7),
+        SD_CMD_RESERVED(8),
+        SD_CMD_RESERVED(9),
+        SD_CMD_RESERVED(10),
+        SD_CMD_RESERVED(11),
+        SD_CMD_RESERVED(12),
+        SD_CMD_INDEX(13) | SD_RESP_R1,
+        SD_CMD_RESERVED(14),
+        SD_CMD_RESERVED(15),
+        SD_CMD_RESERVED(16),
+        SD_CMD_RESERVED(17),
+        SD_CMD_RESERVED(18),
+        SD_CMD_RESERVED(19),
+        SD_CMD_RESERVED(20),
+        SD_CMD_RESERVED(21),
+        SD_CMD_INDEX(22) | SD_RESP_R1 | SD_DATA_READ,
+        SD_CMD_INDEX(23) | SD_RESP_R1,
+        SD_CMD_RESERVED(24),
+        SD_CMD_RESERVED(25),
+        SD_CMD_RESERVED(26),
+        SD_CMD_RESERVED(27),
+        SD_CMD_RESERVED(28),
+        SD_CMD_RESERVED(29),
+        SD_CMD_RESERVED(30),
+        SD_CMD_RESERVED(31),
+        SD_CMD_RESERVED(32),
+        SD_CMD_RESERVED(33),
+        SD_CMD_RESERVED(34),
+        SD_CMD_RESERVED(35),
+        SD_CMD_RESERVED(36),
+        SD_CMD_RESERVED(37),
+        SD_CMD_RESERVED(38),
+        SD_CMD_RESERVED(39),
+        SD_CMD_RESERVED(40),
+        SD_CMD_INDEX(41) | SD_RESP_R3,
+        SD_CMD_INDEX(42) | SD_RESP_R1,
+        SD_CMD_RESERVED(43),
+        SD_CMD_RESERVED(44),
+        SD_CMD_RESERVED(45),
+        SD_CMD_RESERVED(46),
+        SD_CMD_RESERVED(47),
+        SD_CMD_RESERVED(48),
+        SD_CMD_RESERVED(49),
+        SD_CMD_RESERVED(50),
+        SD_CMD_INDEX(51) | SD_RESP_R1 | SD_DATA_READ,
+        SD_CMD_RESERVED(52),
+        SD_CMD_RESERVED(53),
+        SD_CMD_RESERVED(54),
+        SD_CMD_RESERVED(55),
+        SD_CMD_RESERVED(56),
+        SD_CMD_RESERVED(57),
+        SD_CMD_RESERVED(58),
+        SD_CMD_RESERVED(59),
+        SD_CMD_RESERVED(60),
+        SD_CMD_RESERVED(61),
+        SD_CMD_RESERVED(62),
+        SD_CMD_RESERVED(63)
+};
+static inline u32 byte_swap(u32 in) {
+    u32 b0 = in & 0xff;
+    u32 b1 = (in >> 8) & 0xff;
+    u32 b2 = (in >> 16) & 0xff;
+    u32 b3 = (in >> 24) & 0xff;
+    u32 ret = (b0 << 24) | (b1 << 16) | (b2 << 8) | b3;
+    return ret;
+}
+
+static inline u32 read_word(const u8 *buf, int offset) {
+    u32 b0 = buf[offset + 0] & 0xff;
+    u32 b1 = buf[offset + 1] & 0xff;
+    u32 b2 = buf[offset + 2] & 0xff;
+    u32 b3 = buf[offset + 3] & 0xff;
+
+    return b0 | (b1 << 8) | (b2 << 16) | (b3 << 24);
+}
+
+static inline void write_word(u32 val, u8 *buf, int offset) {
+    buf[offset + 0] = val & 0xff;
+    buf[offset + 1] = (val >> 8) & 0xff;
+    buf[offset + 2] = (val >> 16) & 0xff;
+    buf[offset + 3] = (val >> 24) & 0xff;
+}
+
+static inline void memcpy(void *target, const void *source, size_t size) {
+    size_t i;
+    for (i = 0; i < size; i++) {
+        *(char *)target = *(char *)source;
+    }
+}
 
 static void sd_power_off()
 {
@@ -18,8 +206,8 @@ static u32 sd_get_base_clock_hz()
     capabilities_0 = mmio_read(emmc_base + EMMC_CAPABILITIES_0);
     base_clock = ((capabilities_0 >> 8) & 0xff) * 1000000;
 #elif SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
-	uintptr_t mb_addr = 0x00007000;		// 0x7000 in L2 cache coherent mode
-	volatile u32 *mailbuffer = (u32 *)mb_addr;
+	u32 mb_addr = &mbox_buf;
+	volatile u32 *mailbuffer = (u32 *)mbox_buf;
 
 	/* Get the base clock rate */
 	// set up the buffer
@@ -70,9 +258,13 @@ static u32 sd_get_base_clock_hz()
 #if SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
 static int bcm_2708_power_off()
 {
-	uintptr_t mb_addr = 0x40007000;		// 0x7000 in L2 cache coherent mode
-	volatile u32 *mailbuffer = (u32 *)mb_addr;
 
+    printf("bcm_2708_power_off : %d\n", __LINE__);
+
+    u32 mb_addr = &mbox_buf;
+    volatile u32 *mailbuffer = (u32 *)mbox_buf;
+
+    printf("bcm_2708_power_off : %d\n", __LINE__);
 	/* Power off the SD card */
 	// set up the buffer
 	mailbuffer[0] = 8 * 4;		// size of this message
@@ -91,9 +283,11 @@ static int bcm_2708_power_off()
 	// send the message
 	mbox_write(MBOX_PROP, mb_addr);
 
+    printf("bcm_2708_power_off : %d\n", __LINE__);
 	// read the response
 	mbox_read(MBOX_PROP);
 
+    printf("bcm_2708_power_off : %d\n", __LINE__);
 	if(mailbuffer[1] != MBOX_SUCCESS)
 	{
 	    printf("EMMC: bcm_2708_power_off(): property mailbox did not return a valid response.\n");
@@ -119,8 +313,8 @@ static int bcm_2708_power_off()
 
 static int bcm_2708_power_on()
 {
-	uintptr_t mb_addr = 0x40007000;		// 0x7000 in L2 cache coherent mode
-	volatile u32 *mailbuffer = (u32 *)mb_addr;
+    u32 mb_addr = &mbox_buf;
+    volatile u32 *mailbuffer = (u32 *)mbox_buf;
 
 	/* Power on the SD card */
 	// set up the buffer
@@ -173,6 +367,7 @@ static int bcm_2708_power_cycle()
 
 	usleep(5000);
 
+    printf("bcm_2708_power_cycle : %d\n", __LINE__);
 	return bcm_2708_power_on();
 }
 #endif
@@ -206,7 +401,8 @@ static u32 sd_get_clock_divider(u32 base_clock, u32 target_rate)
 
         // Find the first bit set
         int divisor = -1;
-        for(int first_bit = 31; first_bit >= 0; first_bit--)
+        int first_bit;
+        for(first_bit = 31; first_bit >= 0; first_bit--)
         {
             u32 bit_test = (1 << first_bit);
             if(targetted_divisor & bit_test)
@@ -330,6 +526,10 @@ static int sd_reset_dat()
 
 static void sd_issue_command_int(struct emmc_block_dev *dev, u32 cmd_reg, u32 argument, useconds_t timeout)
 {
+    if (dev == NULL) {
+        dev = &uni_emmc_bd;
+    }
+
     dev->last_cmd_reg = cmd_reg;
     dev->last_cmd_success = 0;
 
@@ -480,13 +680,13 @@ static void sd_issue_command_int(struct emmc_block_dev *dev, u32 cmd_reg, u32 ar
             {
                 if(is_write)
 				{
-					u32 data = read_word((uint8_t *)cur_buf_addr, 0);
+					u32 data = read_word((u8 *)cur_buf_addr, 0);
                     mmio_write(emmc_base + EMMC_DATA, data);
 				}
                 else
 				{
 					u32 data = mmio_read(emmc_base + EMMC_DATA);
-					write_word(data, (uint8_t *)cur_buf_addr, 0);
+					write_word(data, (u8 *)cur_buf_addr, 0);
 				}
                 cur_byte_no += 4;
                 cur_buf_addr++;
@@ -615,7 +815,9 @@ static void sd_issue_command_int(struct emmc_block_dev *dev, u32 cmd_reg, u32 ar
 static void sd_handle_card_interrupt(struct emmc_block_dev *dev)
 {
     // Handle a card interrupt
-
+    if (dev == NULL) {
+        dev = &uni_emmc_bd;
+    }
 #ifdef EMMC_DEBUG
     u32 status = mmio_read(emmc_base + EMMC_STATUS);
 
@@ -651,6 +853,9 @@ static void sd_handle_card_interrupt(struct emmc_block_dev *dev)
 
 static void sd_handle_interrupts(struct emmc_block_dev *dev)
 {
+    if (dev == NULL) {
+        dev = &uni_emmc_bd;
+    }
     u32 irpts = mmio_read(emmc_base + EMMC_INTERRUPT);
     u32 reset_mask = 0;
 
@@ -743,6 +948,9 @@ static void sd_handle_interrupts(struct emmc_block_dev *dev)
 
 static void sd_issue_command(struct emmc_block_dev *dev, u32 command, u32 argument, useconds_t timeout)
 {
+    if (dev == NULL) {
+        dev = &uni_emmc_bd;
+    }
     // First, handle any pending interrupts
     sd_handle_interrupts(dev);
 
@@ -805,7 +1013,8 @@ static void sd_issue_command(struct emmc_block_dev *dev, u32 command, u32 argume
             printf("TIMEOUT");
         else
         {
-            for(int i = 0; i < SD_ERR_RSVD; i++)
+            int i;
+            for(i = 0; i < SD_ERR_RSVD; i++)
             {
                 if(dev->last_error & (1 << (i + 16)))
                 {
@@ -821,8 +1030,9 @@ static void sd_issue_command(struct emmc_block_dev *dev, u32 command, u32 argume
 #endif
 }
 
-int sd_card_init(struct block_device **dev)
+int sd_card_init()
 {
+    printf("sd_card_init : %d\n", __LINE__);
     // Check the sanity of the sd_commands and sd_acommands structures
     if(sizeof(sd_commands) != (64 * sizeof(u32)))
     {
@@ -839,6 +1049,7 @@ int sd_card_init(struct block_device **dev)
         return -1;
     }
 
+    printf("sd_card_init : %d\n", __LINE__);
 #if SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
 	// Power cycle the card to ensure its in its startup state
 	if(bcm_2708_power_cycle() != 0)
@@ -851,6 +1062,7 @@ int sd_card_init(struct block_device **dev)
 #endif
 #endif
 
+    printf("sd_card_init : %d\n", __LINE__);
 	// Read the controller version
 	u32 ver = mmio_read(emmc_base + EMMC_SLOTISR_VER);
 	u32 vendor = ver >> 24;
@@ -984,16 +1196,12 @@ int sd_card_init(struct block_device **dev)
 #endif
 	usleep(2000);
 
+
     // Prepare the device structure
-	struct emmc_block_dev *ret;
-	if(*dev == NULL)
-		ret = (struct emmc_block_dev *)malloc(sizeof(struct emmc_block_dev));
-	else
-		ret = (struct emmc_block_dev *)*dev;
+	struct emmc_block_dev *ret = &uni_emmc_bd;
 
-	assert(ret);
+	// bzero memset(ret, 0, sizeof(struct emmc_block_dev));
 
-	memset(ret, 0, sizeof(struct emmc_block_dev));
 	ret->bd.driver_name = driver_name;
 	ret->bd.device_name = device_name;
 	ret->bd.block_size = 512;
@@ -1174,7 +1382,7 @@ int sd_card_init(struct block_device **dev)
 #endif
 	        ret->failed_voltage_switch = 1;
 			sd_power_off();
-	        return sd_card_init((struct block_device **)&ret);
+	        return sd_card_init();
 	    }
 
 	    // Disable SD clock
@@ -1192,7 +1400,7 @@ int sd_card_init(struct block_device **dev)
 #endif
 	        ret->failed_voltage_switch = 1;
 			sd_power_off();
-	        return sd_card_init((struct block_device **)&ret);
+	        return sd_card_init();
 	    }
 
 	    // Set 1.8V signal enable to 1
@@ -1212,7 +1420,7 @@ int sd_card_init(struct block_device **dev)
 #endif
 	        ret->failed_voltage_switch = 1;
 			sd_power_off();
-	        return sd_card_init((struct block_device **)&ret);
+	        return sd_card_init();
 	    }
 
 	    // Re-enable the SD clock
@@ -1233,7 +1441,7 @@ int sd_card_init(struct block_device **dev)
 #endif
 	        ret->failed_voltage_switch = 1;
 			sd_power_off();
-	        return sd_card_init((struct block_device **)&ret);
+	        return sd_card_init();
 	    }
 
 #ifdef EMMC_DEBUG
@@ -1256,20 +1464,21 @@ int sd_card_init(struct block_device **dev)
 #ifdef EMMC_DEBUG
 	printf("SD: card CID: %08x%08x%08x%08x\n", card_cid_3, card_cid_2, card_cid_1, card_cid_0);
 #endif
+    /*
 	u32 *dev_id = (u32 *)malloc(4 * sizeof(u32));
 	dev_id[0] = card_cid_0;
 	dev_id[1] = card_cid_1;
 	dev_id[2] = card_cid_2;
 	dev_id[3] = card_cid_3;
-	ret->bd.device_id = (uint8_t *)dev_id;
+	ret->bd.device_id = (u8 *)dev_id;
 	ret->bd.dev_id_len = 4 * sizeof(u32);
-
+*/
 	// Send CMD3 to enter the data state
 	sd_issue_command(ret, SEND_RELATIVE_ADDR, 0, 500000);
 	if(FAIL(ret))
     {
         printf("SD: error sending SEND_RELATIVE_ADDR\n");
-        free(ret);
+        //free(ret);
         return -1;
     }
 
@@ -1288,32 +1497,32 @@ int sd_card_init(struct block_device **dev)
 	if(crc_error)
 	{
 		printf("SD: CRC error\n");
-		free(ret);
-		free(dev_id);
+		//free(ret);
+		//free(dev_id);
 		return -1;
 	}
 
 	if(illegal_cmd)
 	{
 		printf("SD: illegal command\n");
-		free(ret);
-		free(dev_id);
+		//free(ret);
+		//free(dev_id);
 		return -1;
 	}
 
 	if(error)
 	{
 		printf("SD: generic error\n");
-		free(ret);
-		free(dev_id);
+		//free(ret);
+		//free(dev_id);
 		return -1;
 	}
 
 	if(!ready)
 	{
 		printf("SD: not ready for data\n");
-		free(ret);
-		free(dev_id);
+		//free(ret);
+		//free(dev_id);
 		return -1;
 	}
 
@@ -1326,7 +1535,7 @@ int sd_card_init(struct block_device **dev)
 	if(FAIL(ret))
 	{
 	    printf("SD: error sending CMD7\n");
-	    free(ret);
+	    //free(ret);
 	    return -1;
 	}
 
@@ -1336,8 +1545,8 @@ int sd_card_init(struct block_device **dev)
 	if((status != 3) && (status != 4))
 	{
 		printf("SD: invalid status (%i)\n", status);
-		free(ret);
-		free(dev_id);
+		//free(ret);
+		//free(dev_id);
 		return -1;
 	}
 
@@ -1348,7 +1557,7 @@ int sd_card_init(struct block_device **dev)
 	    if(FAIL(ret))
 	    {
 	        printf("SD: error sending SET_BLOCKLEN\n");
-	        free(ret);
+	        //free(ret);
 	        return -1;
 	    }
 	}
@@ -1359,7 +1568,8 @@ int sd_card_init(struct block_device **dev)
 	mmio_write(emmc_base + EMMC_BLKSIZECNT, controller_block_size);
 
 	// Get the cards SCR register
-	ret->scr = (struct sd_scr *)malloc(sizeof(struct sd_scr));
+	ret->scr = &uni_emmc_src;
+
 	ret->buf = &ret->scr->scr[0];
 	ret->block_size = 8;
 	ret->blocks_to_transfer = 1;
@@ -1368,8 +1578,8 @@ int sd_card_init(struct block_device **dev)
 	if(FAIL(ret))
 	{
 	    printf("SD: error sending SEND_SCR\n");
-	    free(ret->scr);
-        free(ret);
+	    //free(ret->scr);
+        //free(ret);
 	    return -1;
 	}
 
@@ -1448,18 +1658,18 @@ int sd_card_init(struct block_device **dev)
 
 	// Reset interrupt register
 	mmio_write(emmc_base + EMMC_INTERRUPT, 0xffffffff);
-
-	*dev = (struct block_device *)ret;
-
 	return 0;
 }
 
 static int sd_ensure_data_mode(struct emmc_block_dev *edev)
 {
+    if (edev == NULL) {
+        edev = &uni_emmc_bd;
+    }
 	if(edev->card_rca == 0)
 	{
 		// Try again to initialise the card
-		int ret = sd_card_init((struct block_device **)&edev);
+		int ret = sd_card_init();
 		if(ret != 0)
 			return ret;
 	}
@@ -1510,7 +1720,7 @@ static int sd_ensure_data_mode(struct emmc_block_dev *edev)
 	else if(cur_state != 4)
 	{
 		// Not in the transfer state - re-initialise
-		int ret = sd_card_init((struct block_device **)&edev);
+		int ret = sd_card_init();
 		if(ret != 0)
 			return ret;
 	}
@@ -1551,15 +1761,18 @@ static int sd_ensure_data_mode(struct emmc_block_dev *edev)
 // We only support DMA transfers to buffers aligned on a 4 kiB boundary
 static int sd_suitable_for_dma(void *buf)
 {
-    if((uintptr_t)buf & 0xfff)
+    if((u32 *)buf & 0xfff)
         return 0;
     else
         return 1;
 }
 #endif
 
-static int sd_do_data_command(struct emmc_block_dev *edev, int is_write, uint8_t *buf, size_t buf_size, u32 block_no)
+static int sd_do_data_command(struct emmc_block_dev *edev, int is_write, u8 *buf, size_t buf_size, u32 block_no)
 {
+    if (edev == NULL) {
+        edev = &uni_emmc_bd;
+    }
 	// PLSS table 4.20 - SDSC cards use byte addresses rather than block addresses
 	if(!edev->card_supports_sdhc)
 		block_no *= 512;
@@ -1641,10 +1854,10 @@ static int sd_do_data_command(struct emmc_block_dev *edev, int is_write, uint8_t
     return 0;
 }
 
-int sd_read(struct block_device *dev, uint8_t *buf, size_t buf_size, u32 block_no)
+int sd_read(struct block_device *dev, u8 *buf, size_t buf_size, u32 block_no)
 {
 	// Check the status of the card
-	struct emmc_block_dev *edev = (struct emmc_block_dev *)dev;
+	struct emmc_block_dev *edev = &uni_emmc_bd;
     if(sd_ensure_data_mode(edev) != 0)
         return -1;
 
@@ -1663,7 +1876,7 @@ int sd_read(struct block_device *dev, uint8_t *buf, size_t buf_size, u32 block_n
 }
 
 #ifdef SD_WRITE_SUPPORT
-int sd_write(struct block_device *dev, uint8_t *buf, size_t buf_size, u32 block_no)
+int sd_write(struct block_device *dev, u8 *buf, size_t buf_size, u32 block_no)
 {
 	// Check the status of the card
 	struct emmc_block_dev *edev = (struct emmc_block_dev *)dev;
@@ -1685,3 +1898,12 @@ int sd_write(struct block_device *dev, uint8_t *buf, size_t buf_size, u32 block_
 }
 #endif
 
+
+int emmc_init() {
+    printf("Begin to init emmc (sd)\n");
+    return sd_card_init();
+}
+
+int emmc_read_sector(u_int secno, void *dst) {
+    return sd_read(NULL, (u8 *)dst, 512, secno);
+}

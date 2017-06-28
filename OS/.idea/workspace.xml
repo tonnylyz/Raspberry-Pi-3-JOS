@@ -28,126 +28,47 @@
     <favorites_list name="oslabpi" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="util.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/util.h">
+    <leaf>
+      <file leaf-file-name="emmc.c" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/drivers/emmc.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1380">
-              <caret line="69" column="12" lean-forward="false" selection-start-line="69" selection-start-column="12" selection-end-line="69" selection-end-column="12" />
+            <state relative-caret-position="119">
+              <caret line="1873" column="0" lean-forward="false" selection-start-line="1873" selection-start-column="0" selection-end-line="1873" selection-end-column="0" />
               <folding>
-                <element signature="e#2938#3165#0" expanded="true" />
+                <element signature="e#0#17#0" expanded="true" />
+                <element signature="e#6443#6562#0" expanded="true" />
+                <element signature="e#7569#7677#0" expanded="true" />
+                <element signature="e#12850#14001#0" expanded="false" />
+                <element signature="e#14003#14419#0" expanded="false" />
+                <element signature="e#14421#14837#0" expanded="false" />
+                <element signature="e#24757#26828#0" expanded="false" />
+                <element signature="e#30404#30458#0" expanded="true" />
+                <element signature="e#33700#33731#0" expanded="true" />
+                <element signature="e#34165#34190#0" expanded="true" />
+                <element signature="e#37170#37192#0" expanded="true" />
+                <element signature="e#48048#48237#0" expanded="true" />
+                <element signature="e#49527#49790#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Makefile" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/drivers/Makefile">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="140">
-              <caret line="7" column="33" lean-forward="false" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
-              <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="Makefile" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/Makefile">
+        <entry file="file://$PROJECT_DIR$/Makefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="5" column="4" lean-forward="true" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="9" />
+            <state relative-caret-position="252">
+              <caret line="25" column="11" lean-forward="false" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="emmc.c" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/drivers/emmc.c">
+      <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/init/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="20940">
-              <caret line="1449" column="20" lean-forward="false" selection-start-line="1449" selection-start-column="20" selection-end-line="1449" selection-end-column="20" />
-              <folding>
-                <element signature="e#0#17#0" expanded="true" />
-                <element signature="e#418#537#0" expanded="true" />
-                <element signature="e#1587#1695#0" expanded="true" />
-                <element signature="e#1726#1781#0" expanded="true" />
-                <element signature="e#2964#3065#0" expanded="true" />
-                <element signature="e#4191#4290#0" expanded="true" />
-                <element signature="e#6148#6474#0" expanded="true" />
-                <element signature="e#7724#7792#0" expanded="true" />
-                <element signature="e#9542#9662#0" expanded="true" />
-                <element signature="e#11065#11141#0" expanded="true" />
-                <element signature="e#12317#12430#0" expanded="true" />
-                <element signature="e#12771#12841#0" expanded="true" />
-                <element signature="e#13513#13567#0" expanded="true" />
-                <element signature="e#14531#14608#0" expanded="true" />
-                <element signature="e#15523#15600#0" expanded="true" />
-                <element signature="e#16010#16081#0" expanded="true" />
-                <element signature="e#16343#16380#0" expanded="true" />
-                <element signature="e#16634#16946#0" expanded="true" />
-                <element signature="e#17205#17239#0" expanded="true" />
-                <element signature="e#17374#17445#0" expanded="true" />
-                <element signature="e#17802#17940#0" expanded="true" />
-                <element signature="e#18181#18223#0" expanded="true" />
-                <element signature="e#18294#18342#0" expanded="true" />
-                <element signature="e#18407#18450#0" expanded="true" />
-                <element signature="e#18678#18730#0" expanded="true" />
-                <element signature="e#18857#18910#0" expanded="true" />
-                <element signature="e#19036#19087#0" expanded="true" />
-                <element signature="e#19209#19248#0" expanded="true" />
-                <element signature="e#19373#19427#0" expanded="true" />
-                <element signature="e#19580#19633#0" expanded="true" />
-                <element signature="e#19782#19822#0" expanded="true" />
-                <element signature="e#19942#19980#0" expanded="true" />
-                <element signature="e#20131#20171#0" expanded="true" />
-                <element signature="e#20321#20375#0" expanded="true" />
-                <element signature="e#21006#21054#0" expanded="true" />
-                <element signature="e#21682#21729#0" expanded="true" />
-                <element signature="e#22071#22601#0" expanded="true" />
-                <element signature="e#23460#23517#0" expanded="true" />
-                <element signature="e#24066#24105#0" expanded="true" />
-                <element signature="e#24546#24743#0" expanded="true" />
-                <element signature="e#24931#25004#0" expanded="true" />
-                <element signature="e#25059#25107#0" expanded="true" />
-                <element signature="e#25354#25397#0" expanded="true" />
-                <element signature="e#25709#25746#0" expanded="true" />
-                <element signature="e#26439#26570#0" expanded="true" />
-                <element signature="e#26622#26658#0" expanded="true" />
-                <element signature="e#26831#26866#0" expanded="true" />
-                <element signature="e#27171#27202#0" expanded="true" />
-                <element signature="e#27282#27320#0" expanded="true" />
-                <element signature="e#27937#27980#0" expanded="true" />
-                <element signature="e#28325#28471#0" expanded="true" />
-                <element signature="e#29054#29103#0" expanded="true" />
-                <element signature="e#29331#29474#0" expanded="true" />
-                <element signature="e#29880#29929#0" expanded="true" />
-                <element signature="e#30065#30104#0" expanded="true" />
-                <element signature="e#30278#30337#0" expanded="true" />
-                <element signature="e#30765#30787#0" expanded="true" />
-                <element signature="e#31427#31466#0" expanded="true" />
-                <element signature="e#31532#31678#0" expanded="true" />
-                <element signature="e#32024#32063#0" expanded="true" />
-                <element signature="e#32237#32282#0" expanded="true" />
-                <element signature="e#32757#32802#0" expanded="true" />
-                <element signature="e#33325#33389#0" expanded="true" />
-                <element signature="e#33906#33969#0" expanded="true" />
-                <element signature="e#34131#34171#0" expanded="true" />
-                <element signature="e#34501#34592#0" expanded="true" />
-                <element signature="e#35094#35141#0" expanded="true" />
-                <element signature="e#35800#35841#0" expanded="true" />
-                <element signature="e#37929#38278#0" expanded="true" />
-                <element signature="e#38462#38507#0" expanded="true" />
-                <element signature="e#39308#39349#0" expanded="true" />
-                <element signature="e#39486#39539#0" expanded="true" />
-                <element signature="e#39920#40017#0" expanded="true" />
-                <element signature="e#40326#40359#0" expanded="true" />
-                <element signature="e#41211#41264#0" expanded="true" />
-                <element signature="e#41559#41585#0" expanded="true" />
-                <element signature="e#41790#41983#0" expanded="true" />
-                <element signature="e#43219#43482#0" expanded="true" />
-                <element signature="e#44315#44382#0" expanded="true" />
-                <element signature="e#44495#44532#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="280">
+              <caret line="17" column="30" lean-forward="true" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -155,10 +76,22 @@
       <file leaf-file-name="emmc.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/emmc.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="637">
-              <caret line="79" column="2" lean-forward="false" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
+            <state relative-caret-position="539">
+              <caret line="51" column="45" lean-forward="false" selection-start-line="51" selection-start-column="45" selection-end-line="51" selection-end-column="45" />
               <folding>
-                <element signature="e#1438#1456#0" expanded="true" />
+                <element signature="e#1469#1487#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="util.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/util.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="110" column="0" lean-forward="false" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="6" />
+              <folding>
+                <element signature="e#2938#3165#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -168,13 +101,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pri</find>
-      <find>prin</find>
-      <find>printp</find>
-      <find>printch</find>
-      <find>pan</find>
-      <find>pani</find>
-      <find>panic</find>
       <find>PT1X</find>
       <find>PT3X</find>
       <find>bzero</find>
@@ -193,11 +119,18 @@
       <find>read32</find>
       <find>EMMC_ALLOW_OLD_SDHCI</find>
       <find>emmc_set_base</find>
-      <find>uint</find>
-      <find>uint32_t</find>
       <find>write_word</find>
-      <find>uint8_t</find>
       <find>uint16_t</find>
+      <find>uint</find>
+      <find>uint8_t</find>
+      <find>block_device</find>
+      <find>uint32_t</find>
+      <find>uintptr_t</find>
+      <find>emmc_block_dev</find>
+      <find>dev_id</find>
+      <find>sd_card_init</find>
+      <find>block_size</find>
+      <find>setup succe</find>
     </findStrings>
     <replaceStrings>
       <replace>ptr</replace>
@@ -205,9 +138,10 @@
       <replace>PTX</replace>
       <replace>printf(</replace>
       <replace>get_ptr</replace>
-      <replace>u32</replace>
-      <replace>u8</replace>
       <replace>u16</replace>
+      <replace>u8</replace>
+      <replace>u32</replace>
+      <replace>u32 *</replace>
     </replaceStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -217,7 +151,6 @@
         <option value="$PROJECT_DIR$/init/asm.S" />
         <option value="$PROJECT_DIR$/include/type.h" />
         <option value="$PROJECT_DIR$/include/print.h" />
-        <option value="$PROJECT_DIR$/lib/print.c" />
         <option value="$PROJECT_DIR$/drivers/uart.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/init/Makefile" />
@@ -236,18 +169,20 @@
         <option value="$PROJECT_DIR$/kernel.lds" />
         <option value="$PROJECT_DIR$/boot/vm.c" />
         <option value="$PROJECT_DIR$/boot/start.S" />
-        <option value="$PROJECT_DIR$/init/main.c" />
         <option value="$PROJECT_DIR$/mm/pmap.c" />
-        <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/drivers/mbox.c" />
         <option value="$PROJECT_DIR$/include/mbox.h" />
-        <option value="$PROJECT_DIR$/include/timer.h" />
-        <option value="$PROJECT_DIR$/drivers/timer.c" />
         <option value="$PROJECT_DIR$/include/types.h" />
         <option value="$PROJECT_DIR$/include/util.h" />
+        <option value="$PROJECT_DIR$/drivers/Makefile" />
+        <option value="$PROJECT_DIR$/include/timer.h" />
+        <option value="$PROJECT_DIR$/drivers/timer.c" />
+        <option value="$PROJECT_DIR$/include/block.h" />
+        <option value="$PROJECT_DIR$/Makefile" />
+        <option value="$PROJECT_DIR$/lib/print.c" />
         <option value="$PROJECT_DIR$/drivers/emmc.c" />
         <option value="$PROJECT_DIR$/include/emmc.h" />
-        <option value="$PROJECT_DIR$/drivers/Makefile" />
+        <option value="$PROJECT_DIR$/init/main.c" />
       </list>
     </option>
   </component>
@@ -259,10 +194,10 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="27" />
+    <option name="y" value="128" />
+    <option name="width" value="1280" />
+    <option name="height" value="690" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -318,6 +253,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="oslabpi" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="init" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -645,7 +594,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="39751000" />
+    <option name="totallyTimeSpent" value="45762000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -657,26 +606,37 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="27" y="128" width="1280" height="690" extended-state="0" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1401919" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1761242" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.338945" sideWeight="0.50214136" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31433225" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.49174312" sideWeight="0.49785867" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32967034" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.338945" sideWeight="0.50214136" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20842217" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33802816" sideWeight="0.49785867" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1401919" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20842217" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996634" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -717,13 +677,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/kernel.lds">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="16" lean-forward="false" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/init/Makefile">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -862,13 +815,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/init/init.c" />
-    <entry file="file://$PROJECT_DIR$/include/error.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="11" column="15" lean-forward="false" selection-start-line="11" selection-start-column="15" selection-end-line="11" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/printf.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
@@ -887,20 +833,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="324">
           <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/print.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="43">
-          <caret line="231" column="0" lean-forward="false" selection-start-line="231" selection-start-column="0" selection-end-line="231" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/printf.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-513">
-          <caret line="11" column="9" lean-forward="true" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -932,13 +864,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/init/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="4" column="13" lean-forward="true" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mm/pmap.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-3182">
@@ -960,37 +885,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/mbox.h">
+    <entry file="file://$PROJECT_DIR$/include/types.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="26" column="22" lean-forward="false" selection-start-line="26" selection-start-column="22" selection-end-line="26" selection-end-column="22" />
+        <state relative-caret-position="80">
+          <caret line="4" column="26" lean-forward="false" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/drivers/timer.c">
+    <entry file="file://$PROJECT_DIR$/lib/Makefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1580">
-          <caret line="79" column="5" lean-forward="true" selection-start-line="79" selection-start-column="5" selection-end-line="79" selection-end-column="5" />
-          <folding>
-            <element signature="e#1134#1152#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="100">
+          <caret line="5" column="4" lean-forward="true" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/timer.h">
+    <entry file="file://$PROJECT_DIR$/drivers/Makefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="297">
-          <caret line="24" column="23" lean-forward="true" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/drivers/mbox.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="77">
-          <caret line="23" column="0" lean-forward="true" selection-start-line="23" selection-start-column="0" selection-end-line="27" selection-end-column="26" />
-          <folding />
+        <state relative-caret-position="140">
+          <caret line="7" column="33" lean-forward="false" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
         </state>
       </provider>
     </entry>
@@ -1002,143 +915,128 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Makefile">
+    <entry file="file://$PROJECT_DIR$/include/timer.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="660">
-          <caret line="33" column="32" lean-forward="false" selection-start-line="33" selection-start-column="32" selection-end-line="33" selection-end-column="32" />
+        <state relative-caret-position="193">
+          <caret line="36" column="17" lean-forward="false" selection-start-line="36" selection-start-column="17" selection-end-line="36" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/types.h">
+    <entry file="file://$PROJECT_DIR$/include/error.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="80">
-          <caret line="4" column="26" lean-forward="false" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
+        <state relative-caret-position="113">
+          <caret line="11" column="15" lean-forward="false" selection-start-line="11" selection-start-column="15" selection-end-line="11" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/drivers/timer.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="53" column="16" lean-forward="true" selection-start-line="53" selection-start-column="16" selection-end-line="53" selection-end-column="16" />
+          <folding>
+            <element signature="e#1134#1152#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/block.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="52">
+          <caret line="28" column="7" lean-forward="false" selection-start-line="28" selection-start-column="7" selection-end-line="28" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/util.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1380">
-          <caret line="69" column="12" lean-forward="false" selection-start-line="69" selection-start-column="12" selection-end-line="69" selection-end-column="12" />
+        <state relative-caret-position="432">
+          <caret line="110" column="0" lean-forward="false" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="6" />
           <folding>
             <element signature="e#2938#3165#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/emmc.h">
+    <entry file="file://$PROJECT_DIR$/include/mbox.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="637">
-          <caret line="79" column="2" lean-forward="false" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
+        <state relative-caret-position="197">
+          <caret line="26" column="8" lean-forward="false" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/drivers/mbox.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="32" column="28" lean-forward="false" selection-start-line="32" selection-start-column="28" selection-end-line="32" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/print.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="137" column="19" lean-forward="false" selection-start-line="137" selection-start-column="19" selection-end-line="137" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/printf.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-208">
+          <caret line="11" column="9" lean-forward="true" selection-start-line="11" selection-start-column="9" selection-end-line="11" selection-end-column="9" />
           <folding>
-            <element signature="e#1438#1456#0" expanded="true" />
+            <element signature="e#374#393#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/Makefile">
+    <entry file="file://$PROJECT_DIR$/include/emmc.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
-          <caret line="5" column="4" lean-forward="true" selection-start-line="5" selection-start-column="4" selection-end-line="5" selection-end-column="9" />
-          <folding />
+        <state relative-caret-position="539">
+          <caret line="51" column="45" lean-forward="false" selection-start-line="51" selection-start-column="45" selection-end-line="51" selection-end-column="45" />
+          <folding>
+            <element signature="e#1469#1487#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/drivers/emmc.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20940">
-          <caret line="1449" column="20" lean-forward="false" selection-start-line="1449" selection-start-column="20" selection-end-line="1449" selection-end-column="20" />
+        <state relative-caret-position="119">
+          <caret line="1873" column="0" lean-forward="false" selection-start-line="1873" selection-start-column="0" selection-end-line="1873" selection-end-column="0" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
-            <element signature="e#418#537#0" expanded="true" />
-            <element signature="e#1587#1695#0" expanded="true" />
-            <element signature="e#1726#1781#0" expanded="true" />
-            <element signature="e#2964#3065#0" expanded="true" />
-            <element signature="e#4191#4290#0" expanded="true" />
-            <element signature="e#6148#6474#0" expanded="true" />
-            <element signature="e#7724#7792#0" expanded="true" />
-            <element signature="e#9542#9662#0" expanded="true" />
-            <element signature="e#11065#11141#0" expanded="true" />
-            <element signature="e#12317#12430#0" expanded="true" />
-            <element signature="e#12771#12841#0" expanded="true" />
-            <element signature="e#13513#13567#0" expanded="true" />
-            <element signature="e#14531#14608#0" expanded="true" />
-            <element signature="e#15523#15600#0" expanded="true" />
-            <element signature="e#16010#16081#0" expanded="true" />
-            <element signature="e#16343#16380#0" expanded="true" />
-            <element signature="e#16634#16946#0" expanded="true" />
-            <element signature="e#17205#17239#0" expanded="true" />
-            <element signature="e#17374#17445#0" expanded="true" />
-            <element signature="e#17802#17940#0" expanded="true" />
-            <element signature="e#18181#18223#0" expanded="true" />
-            <element signature="e#18294#18342#0" expanded="true" />
-            <element signature="e#18407#18450#0" expanded="true" />
-            <element signature="e#18678#18730#0" expanded="true" />
-            <element signature="e#18857#18910#0" expanded="true" />
-            <element signature="e#19036#19087#0" expanded="true" />
-            <element signature="e#19209#19248#0" expanded="true" />
-            <element signature="e#19373#19427#0" expanded="true" />
-            <element signature="e#19580#19633#0" expanded="true" />
-            <element signature="e#19782#19822#0" expanded="true" />
-            <element signature="e#19942#19980#0" expanded="true" />
-            <element signature="e#20131#20171#0" expanded="true" />
-            <element signature="e#20321#20375#0" expanded="true" />
-            <element signature="e#21006#21054#0" expanded="true" />
-            <element signature="e#21682#21729#0" expanded="true" />
-            <element signature="e#22071#22601#0" expanded="true" />
-            <element signature="e#23460#23517#0" expanded="true" />
-            <element signature="e#24066#24105#0" expanded="true" />
-            <element signature="e#24546#24743#0" expanded="true" />
-            <element signature="e#24931#25004#0" expanded="true" />
-            <element signature="e#25059#25107#0" expanded="true" />
-            <element signature="e#25354#25397#0" expanded="true" />
-            <element signature="e#25709#25746#0" expanded="true" />
-            <element signature="e#26439#26570#0" expanded="true" />
-            <element signature="e#26622#26658#0" expanded="true" />
-            <element signature="e#26831#26866#0" expanded="true" />
-            <element signature="e#27171#27202#0" expanded="true" />
-            <element signature="e#27282#27320#0" expanded="true" />
-            <element signature="e#27937#27980#0" expanded="true" />
-            <element signature="e#28325#28471#0" expanded="true" />
-            <element signature="e#29054#29103#0" expanded="true" />
-            <element signature="e#29331#29474#0" expanded="true" />
-            <element signature="e#29880#29929#0" expanded="true" />
-            <element signature="e#30065#30104#0" expanded="true" />
-            <element signature="e#30278#30337#0" expanded="true" />
-            <element signature="e#30765#30787#0" expanded="true" />
-            <element signature="e#31427#31466#0" expanded="true" />
-            <element signature="e#31532#31678#0" expanded="true" />
-            <element signature="e#32024#32063#0" expanded="true" />
-            <element signature="e#32237#32282#0" expanded="true" />
-            <element signature="e#32757#32802#0" expanded="true" />
-            <element signature="e#33325#33389#0" expanded="true" />
-            <element signature="e#33906#33969#0" expanded="true" />
-            <element signature="e#34131#34171#0" expanded="true" />
-            <element signature="e#34501#34592#0" expanded="true" />
-            <element signature="e#35094#35141#0" expanded="true" />
-            <element signature="e#35800#35841#0" expanded="true" />
-            <element signature="e#37929#38278#0" expanded="true" />
-            <element signature="e#38462#38507#0" expanded="true" />
-            <element signature="e#39308#39349#0" expanded="true" />
-            <element signature="e#39486#39539#0" expanded="true" />
-            <element signature="e#39920#40017#0" expanded="true" />
-            <element signature="e#40326#40359#0" expanded="true" />
-            <element signature="e#41211#41264#0" expanded="true" />
-            <element signature="e#41559#41585#0" expanded="true" />
-            <element signature="e#41790#41983#0" expanded="true" />
-            <element signature="e#43219#43482#0" expanded="true" />
-            <element signature="e#44315#44382#0" expanded="true" />
-            <element signature="e#44495#44532#0" expanded="true" />
+            <element signature="e#6443#6562#0" expanded="true" />
+            <element signature="e#7569#7677#0" expanded="true" />
+            <element signature="e#12850#14001#0" expanded="false" />
+            <element signature="e#14003#14419#0" expanded="false" />
+            <element signature="e#14421#14837#0" expanded="false" />
+            <element signature="e#24757#26828#0" expanded="false" />
+            <element signature="e#30404#30458#0" expanded="true" />
+            <element signature="e#33700#33731#0" expanded="true" />
+            <element signature="e#34165#34190#0" expanded="true" />
+            <element signature="e#37170#37192#0" expanded="true" />
+            <element signature="e#48048#48237#0" expanded="true" />
+            <element signature="e#49527#49790#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/drivers/Makefile">
+    <entry file="file://$PROJECT_DIR$/Makefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="140">
-          <caret line="7" column="33" lean-forward="false" selection-start-line="7" selection-start-column="33" selection-end-line="7" selection-end-column="33" />
+        <state relative-caret-position="252">
+          <caret line="25" column="11" lean-forward="false" selection-start-line="25" selection-start-column="11" selection-end-line="25" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/init/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="17" column="30" lean-forward="true" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
           <folding />
         </state>
       </provider>

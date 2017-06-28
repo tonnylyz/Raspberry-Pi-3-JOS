@@ -11,7 +11,7 @@ link_script   := kernel.lds
 modules       := boot drivers init lib mm
 objects       := $(boot_dir)/*.o \
                  $(init_dir)/*.o \
-                 $(drivers_dir)/uart.o \
+                 $(drivers_dir)/*.o \
                  $(lib_dir)/*.o \
                  $(mm_dir)/pmap.o
 

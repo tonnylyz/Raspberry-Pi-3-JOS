@@ -19,72 +19,31 @@
  * THE SOFTWARE.
  */
 
-#include <timer.h>
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include <types.h>
-#include <error.h>
 
-extern void set_ptr(u32, u32);
-extern u32  get_ptr(u32);
-#define mmio_read get_ptr
-#define mmio_write set_ptr
+struct fs;
 
-#define TIMER_BASE		0x3F003000
-#define TIMER_CLO		0x4
+struct block_device {
+    char *driver_name;
+    char *device_name;
+    u8 *device_id;
+    size_t dev_id_len;
 
-static u32 timer_base = TIMER_BASE;
+    int supports_multiple_block_read;
+    int supports_multiple_block_write;
 
-void timer_set_base(u32 base)
-{
-	timer_base = base;
-}
+    int (*read)(struct block_device *dev, u8 *buf, size_t buf_size, u32 block_num);
+    int (*write)(struct block_device *dev, u8 *buf, size_t buf_size, u32 block_num);
+    size_t block_size;
+    size_t num_blocks;
 
-int usleep(useconds_t usec)
-{
-	struct timer_wait tw = register_timer(usec);
-	while(!compare_timer(tw));
-	return 0;	
-}
+    struct fs *fs;
+};
 
-struct timer_wait register_timer(useconds_t usec)
-{
-	struct timer_wait tw;
-	tw.rollover = 0;
-	tw.trigger_value = 0;
+size_t block_read(struct block_device *dev, u8 *buf, size_t buf_size, u32 starting_block);
+size_t block_write(struct block_device *dev, u8 *buf, size_t buf_size, u32 starting_block);
 
-	if(usec < 0)
-	{
-		//errno = EINVAL;
-		return tw;
-	}
-	u32 cur_timer = mmio_read(timer_base + TIMER_CLO);
-	u32 trig = cur_timer + (u32)usec;
-
-	if(cur_timer == 0)
-		trig = 0;
-
-	tw.trigger_value = trig;
-	if(trig > cur_timer)
-		tw.rollover = 0;
-	else
-		tw.rollover = 1;
-	return tw;
-}
-
-int compare_timer(struct timer_wait tw)
-{
-	u32 cur_timer = mmio_read(timer_base + TIMER_CLO);
-
-	if(tw.trigger_value == 0)
-		return 1;
-
-	if(cur_timer < tw.trigger_value)
-	{
-		if(tw.rollover)
-			tw.rollover = 0;
-	}
-	else if(!tw.rollover)
-		return 1;
-
-	return 0;
-}
-
+#endif

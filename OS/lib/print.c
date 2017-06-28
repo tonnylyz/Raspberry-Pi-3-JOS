@@ -135,6 +135,7 @@ lp_Print(void (*output)(void *, char *, int),
                 OUTPUT(arg, buf, length);
                 break;
 
+            case 'i':
             case 'd':
             case 'D':
                 if (longFlag) {

@@ -22,6 +22,8 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <types.h>
+
 typedef int useconds_t;
 
 struct timer_wait

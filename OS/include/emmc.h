@@ -31,18 +31,27 @@
  */
 
 
+#ifndef EMMC_H
+#define EMMC_H
+
 #include <timer.h>
-#include <util.h>
 #include <types.h>
+#include <block.h>
 
 extern void set_ptr(u32, u32);
 extern u32  get_ptr(u32);
 #define mmio_read get_ptr
 #define mmio_write set_ptr
 
-#ifdef DEBUG2
 #define EMMC_DEBUG
-#endif
+
+int emmc_init();
+int sd_read(struct block_device *, u8 *, size_t buf_size, u32);
+int sd_write(struct block_device *, u8 *, size_t buf_size, u32);
+
+int emmc_read_sector(u_int secno, void *dst);
+
+
 
 // Configuration options
 
@@ -83,14 +92,6 @@ extern u32  get_ptr(u32);
 #define SDHCI_IMPLEMENTATION_GENERIC        0
 #define SDHCI_IMPLEMENTATION_BCM_2708       1
 #define SDHCI_IMPLEMENTATION                SDHCI_IMPLEMENTATION_BCM_2708
-
-static char driver_name[] = "emmc";
-static char device_name[] = "emmc0";	// We use a single device name as there is only
-// one card slot in the RPi
-
-static u32 hci_ver = 0;
-static u32 capabilities_0 = 0;
-static u32 capabilities_1 = 0;
 
 struct sd_scr
 {
@@ -255,158 +256,6 @@ struct emmc_block_dev
 #define SD_VER_3            4
 #define SD_VER_4            5
 
-static u32 emmc_base = EMMC_BASE;
-
-void emmc_set_base(u32 base)
-{
-    emmc_base = base;
-}
-
-static char *sd_versions[] = { "unknown", "1.0 and 1.01", "1.10",
-                               "2.00", "3.0x", "4.xx" };
-
-#ifdef EMMC_DEBUG
-static char *err_irpts[] = { "CMD_TIMEOUT", "CMD_CRC", "CMD_END_BIT", "CMD_INDEX",
-	"DATA_TIMEOUT", "DATA_CRC", "DATA_END_BIT", "CURRENT_LIMIT",
-	"AUTO_CMD12", "ADMA", "TUNING", "RSVD" };
-#endif
-
-int sd_read(struct block_device *, u8 *, size_t buf_size, u32);
-int sd_write(struct block_device *, u8 *, size_t buf_size, u32);
-
-static u32 sd_commands[] = {
-        SD_CMD_INDEX(0),
-        SD_CMD_RESERVED(1),
-        SD_CMD_INDEX(2) | SD_RESP_R2,
-        SD_CMD_INDEX(3) | SD_RESP_R6,
-        SD_CMD_INDEX(4),
-        SD_CMD_INDEX(5) | SD_RESP_R4,
-        SD_CMD_INDEX(6) | SD_RESP_R1,
-        SD_CMD_INDEX(7) | SD_RESP_R1b,
-        SD_CMD_INDEX(8) | SD_RESP_R7,
-        SD_CMD_INDEX(9) | SD_RESP_R2,
-        SD_CMD_INDEX(10) | SD_RESP_R2,
-        SD_CMD_INDEX(11) | SD_RESP_R1,
-        SD_CMD_INDEX(12) | SD_RESP_R1b | SD_CMD_TYPE_ABORT,
-        SD_CMD_INDEX(13) | SD_RESP_R1,
-        SD_CMD_RESERVED(14),
-        SD_CMD_INDEX(15),
-        SD_CMD_INDEX(16) | SD_RESP_R1,
-        SD_CMD_INDEX(17) | SD_RESP_R1 | SD_DATA_READ,
-        SD_CMD_INDEX(18) | SD_RESP_R1 | SD_DATA_READ | SD_CMD_MULTI_BLOCK | SD_CMD_BLKCNT_EN,
-        SD_CMD_INDEX(19) | SD_RESP_R1 | SD_DATA_READ,
-        SD_CMD_INDEX(20) | SD_RESP_R1b,
-        SD_CMD_RESERVED(21),
-        SD_CMD_RESERVED(22),
-        SD_CMD_INDEX(23) | SD_RESP_R1,
-        SD_CMD_INDEX(24) | SD_RESP_R1 | SD_DATA_WRITE,
-        SD_CMD_INDEX(25) | SD_RESP_R1 | SD_DATA_WRITE | SD_CMD_MULTI_BLOCK | SD_CMD_BLKCNT_EN,
-        SD_CMD_RESERVED(26),
-        SD_CMD_INDEX(27) | SD_RESP_R1 | SD_DATA_WRITE,
-        SD_CMD_INDEX(28) | SD_RESP_R1b,
-        SD_CMD_INDEX(29) | SD_RESP_R1b,
-        SD_CMD_INDEX(30) | SD_RESP_R1 | SD_DATA_READ,
-        SD_CMD_RESERVED(31),
-        SD_CMD_INDEX(32) | SD_RESP_R1,
-        SD_CMD_INDEX(33) | SD_RESP_R1,
-        SD_CMD_RESERVED(34),
-        SD_CMD_RESERVED(35),
-        SD_CMD_RESERVED(36),
-        SD_CMD_RESERVED(37),
-        SD_CMD_INDEX(38) | SD_RESP_R1b,
-        SD_CMD_RESERVED(39),
-        SD_CMD_RESERVED(40),
-        SD_CMD_RESERVED(41),
-        SD_CMD_RESERVED(42) | SD_RESP_R1,
-        SD_CMD_RESERVED(43),
-        SD_CMD_RESERVED(44),
-        SD_CMD_RESERVED(45),
-        SD_CMD_RESERVED(46),
-        SD_CMD_RESERVED(47),
-        SD_CMD_RESERVED(48),
-        SD_CMD_RESERVED(49),
-        SD_CMD_RESERVED(50),
-        SD_CMD_RESERVED(51),
-        SD_CMD_RESERVED(52),
-        SD_CMD_RESERVED(53),
-        SD_CMD_RESERVED(54),
-        SD_CMD_INDEX(55) | SD_RESP_R1,
-        SD_CMD_INDEX(56) | SD_RESP_R1 | SD_CMD_ISDATA,
-        SD_CMD_RESERVED(57),
-        SD_CMD_RESERVED(58),
-        SD_CMD_RESERVED(59),
-        SD_CMD_RESERVED(60),
-        SD_CMD_RESERVED(61),
-        SD_CMD_RESERVED(62),
-        SD_CMD_RESERVED(63)
-};
-
-static u32 sd_acommands[] = {
-        SD_CMD_RESERVED(0),
-        SD_CMD_RESERVED(1),
-        SD_CMD_RESERVED(2),
-        SD_CMD_RESERVED(3),
-        SD_CMD_RESERVED(4),
-        SD_CMD_RESERVED(5),
-        SD_CMD_INDEX(6) | SD_RESP_R1,
-        SD_CMD_RESERVED(7),
-        SD_CMD_RESERVED(8),
-        SD_CMD_RESERVED(9),
-        SD_CMD_RESERVED(10),
-        SD_CMD_RESERVED(11),
-        SD_CMD_RESERVED(12),
-        SD_CMD_INDEX(13) | SD_RESP_R1,
-        SD_CMD_RESERVED(14),
-        SD_CMD_RESERVED(15),
-        SD_CMD_RESERVED(16),
-        SD_CMD_RESERVED(17),
-        SD_CMD_RESERVED(18),
-        SD_CMD_RESERVED(19),
-        SD_CMD_RESERVED(20),
-        SD_CMD_RESERVED(21),
-        SD_CMD_INDEX(22) | SD_RESP_R1 | SD_DATA_READ,
-        SD_CMD_INDEX(23) | SD_RESP_R1,
-        SD_CMD_RESERVED(24),
-        SD_CMD_RESERVED(25),
-        SD_CMD_RESERVED(26),
-        SD_CMD_RESERVED(27),
-        SD_CMD_RESERVED(28),
-        SD_CMD_RESERVED(29),
-        SD_CMD_RESERVED(30),
-        SD_CMD_RESERVED(31),
-        SD_CMD_RESERVED(32),
-        SD_CMD_RESERVED(33),
-        SD_CMD_RESERVED(34),
-        SD_CMD_RESERVED(35),
-        SD_CMD_RESERVED(36),
-        SD_CMD_RESERVED(37),
-        SD_CMD_RESERVED(38),
-        SD_CMD_RESERVED(39),
-        SD_CMD_RESERVED(40),
-        SD_CMD_INDEX(41) | SD_RESP_R3,
-        SD_CMD_INDEX(42) | SD_RESP_R1,
-        SD_CMD_RESERVED(43),
-        SD_CMD_RESERVED(44),
-        SD_CMD_RESERVED(45),
-        SD_CMD_RESERVED(46),
-        SD_CMD_RESERVED(47),
-        SD_CMD_RESERVED(48),
-        SD_CMD_RESERVED(49),
-        SD_CMD_RESERVED(50),
-        SD_CMD_INDEX(51) | SD_RESP_R1 | SD_DATA_READ,
-        SD_CMD_RESERVED(52),
-        SD_CMD_RESERVED(53),
-        SD_CMD_RESERVED(54),
-        SD_CMD_RESERVED(55),
-        SD_CMD_RESERVED(56),
-        SD_CMD_RESERVED(57),
-        SD_CMD_RESERVED(58),
-        SD_CMD_RESERVED(59),
-        SD_CMD_RESERVED(60),
-        SD_CMD_RESERVED(61),
-        SD_CMD_RESERVED(62),
-        SD_CMD_RESERVED(63)
-};
 
 // The actual command indices
 #define GO_IDLE_STATE           0
@@ -465,3 +314,4 @@ static u32 sd_acommands[] = {
 #include "mbox.h"
 #endif
 
+#endif // EMMC_H
