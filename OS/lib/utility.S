@@ -12,43 +12,8 @@ set_ptr:
 empty_loop:
     ret
 
-.align 11
-.globl vectors
-vectors:
-    vector el1_sync
-    vector el1_irq
-    vector el1_fiq
-    vector el1_err
 
-    vector el1_sync
-    vector el1_irq
-    vector el1_fiq
-    vector el1_err
-
-    vector el1_sync
-    vector el1_irq
-    vector el1_fiq
-    vector el1_err
-
-    vector el1_sync
-    vector el1_irq
-    vector el1_fiq
-    vector el1_err
-
-.globl el1_sync
-el1_sync:
-    eret
-
-.globl el1_fiq
-el1_fiq:
-    eret
-
-.globl el1_err
-el1_err:
-    eret
-
-.globl el1_irq
-el1_irq:
+.macro push_time_stack
     str x0, [sp, #-16]!
     ldr x0, =0xffffff0001751000             // TIMESTACKTOP
 
@@ -79,13 +44,9 @@ el1_irq:
 
     mrs x19, spsr_el1
     str x19, [x21, #-8]!
+.endm
 
-
-    ldr x19, =0xFFFFFF0001000000// kernel stack
-    mov sp, x19
-
-    bl handle_int
-
+.macro pop_time_stack
     ldr x30, =0xffffff0001750ee8            // TIMESTACK
 
     ldr x0, [x30], #8
@@ -112,5 +73,59 @@ el1_irq:
     ldp x25, x26, [x30], #16
     ldp x27, x28, [x30], #16
     ldp x29, x30, [x30], #0
+.endm
 
+.macro vector handler
+    .align 7
+    b \handler
+.endm
+
+.align 11
+.globl vectors
+vectors:
+    vector el1_sync
+    vector el1_irq
+    vector el1_fiq
+    vector el1_err
+
+    vector el1_sync
+    vector el1_irq
+    vector el1_fiq
+    vector el1_err
+
+    vector el1_sync
+    vector el1_irq
+    vector el1_fiq
+    vector el1_err
+
+    vector el1_sync
+    vector el1_irq
+    vector el1_fiq
+    vector el1_err
+
+// System call and PGFAULT
+.globl el1_sync
+el1_sync:
+    push_time_stack
+    mrs x19, esr_el1
+    lsr x19, x19, #26
+    cmp x19, #0x15
+    b.eq handle_syscall
+    pop_time_stack
+    eret
+
+.globl el1_fiq
+el1_fiq:
+    eret
+
+.globl el1_err
+el1_err:
+    eret
+
+// Int
+.globl el1_irq
+el1_irq:
+    push_time_stack
+    bl handle_int
+    pop_time_stack
     eret

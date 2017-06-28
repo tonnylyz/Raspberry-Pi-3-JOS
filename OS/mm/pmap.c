@@ -26,6 +26,21 @@ void page_bzero(size_t b, size_t len) {
     }
 }
 
+void bcopy(const void *src, void *dst, size_t len) {
+    void *max;
+    max = dst + len;
+    while (dst + 3 < max) {
+        *(int *) dst = *(int *) src;
+        dst += 4;
+        src += 4;
+    }
+    while (dst < max) {
+        *(char *) dst = *(char *) src;
+        dst += 1;
+        src += 1;
+    }
+}
+
 int page_alloc(struct Page **pp) {
     struct Page *ppage_temp;
     ppage_temp = LIST_FIRST(&page_free_list);

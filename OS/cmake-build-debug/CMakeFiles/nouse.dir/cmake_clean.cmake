@@ -1,9 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/nouse.dir/dummy.c.obj"
+  "CMakeFiles/nouse.dir/dummy.c.o"
   "nouse.pdb"
-  "nouse.exe"
-  "nouse.exe.manifest"
-  "libnouse.dll.a"
+  "nouse"
 )
 
 # Per-language clean rules from dependency scanning.

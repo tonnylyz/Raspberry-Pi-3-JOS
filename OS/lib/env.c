@@ -52,7 +52,7 @@ void env_init(void)
 
 static int env_setup_vm(struct Env *e)
 {
-	int i, r;
+	int r;
 	struct Page *p = NULL;
 	u_long *pgdir;
 	if ((r = page_alloc(&p)) < 0) {
@@ -61,7 +61,7 @@ static int env_setup_vm(struct Env *e)
 	}
 	p->pp_ref++;
 	pgdir = (Pde *)page2pa(p);
-    // TODO: set ttbr
+    e->env_pgdir = pgdir;
 	return 0;
 }
 
@@ -79,7 +79,8 @@ int env_alloc(struct Env **new, u_int parent_id)
     e->env_parent_id = parent_id;
     e->env_status = ENV_RUNNABLE;
 
-    // TODO: set spsr and sp
+    e->env_tf.spsr = 0;
+    e->env_tf.sp = USTACKTOP;
 
     LIST_REMOVE(e, env_link);
     *new = e;
@@ -100,7 +101,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize, u_char *bin, u_int32_t
             return r;
         }
         p->pp_ref++;
-        r = page_insert(env->env_pgdir, p, va - offset + i, PTE_V | PTE_R);
+        r = page_insert(env->env_pgdir, p, va - offset + i, ATTRIB_AP_RW_ALL);
         if (r < 0) {
             panic("Insert page failed.");
             return r;
@@ -114,7 +115,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize, u_char *bin, u_int32_t
             return r;
         }
         p->pp_ref++;
-        r = page_insert(env->env_pgdir, p, va - offset + i, PTE_V | PTE_R);
+        r = page_insert(env->env_pgdir, p, va - offset + i, ATTRIB_AP_RW_ALL);
         if (r < 0) {
             panic("Insert page failed.");
             return r;
@@ -129,24 +130,21 @@ static void load_icode(struct Env *e, u_char *binary, u_int size)
 	struct Page *p = NULL;
 	u_long entry_point;
 	u_long r;
-    u_long perm;
+    //u_long perm;
     r = page_alloc(&p);
     if (r < 0) {
         panic("Allocate page failed.");
-        return r;
     }
-    r = page_insert(e->env_pgdir, p, USTACKTOP - BY2PG, PTE_V | PTE_R);
+    r = page_insert(e->env_pgdir, p, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     if (r < 0) {
         panic("Insert page failed.");
-        return r;
     }
     r = load_elf(binary, size, &entry_point, e, load_icode_mapper);
     if (r < 0) {
         panic("Load elf failed.");
-        return r;
     }
-    // set elr instead of pc
-	e->env_tf.pc = entry_point;
+
+	e->env_tf.elr = entry_point;
 }
 
 void env_create(u_char *binary, int size)
@@ -175,14 +173,22 @@ void env_destroy(struct Env *e)
 	}
 }
 
+static void set_ttbr0(u_long pa) {
+    __asm__ __volatile__ (
+        "msr ttbr0_el1, %0" :: "r"(pa)
+    );
+}
+
 void env_run(struct Env *e)
 {
     struct Trapframe *old = (struct Trapframe *) (TIMESTACKTOP - sizeof(struct Trapframe));
     if (curenv) {
         bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
-        curenv->env_tf.pc = old->cp0_epc;
+        curenv->env_tf.elr = old->elr;
     }
     curenv = e;
     bcopy(&curenv->env_tf, old, sizeof(struct Trapframe));
-    // TODO: switching context
+
+    set_ttbr0((u_long)curenv->env_pgdir);
+    tlb_invalidate(NULL, 0);
 }

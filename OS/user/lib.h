@@ -35,7 +35,7 @@ int fork(void);
 void user_bcopy(const void *src, void *dst, size_t len);
 void user_bzero(void *v, u_int n);
 //////////////////////////////////////////////////syscall_lib
-void syscall_putchar(char ch);
+extern void syscall_putchar(char ch);
 u_int syscall_getenvid(void);
 void syscall_yield(void);
 int syscall_env_destroy(u_int envid);

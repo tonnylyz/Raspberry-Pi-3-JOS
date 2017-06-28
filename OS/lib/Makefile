@@ -7,7 +7,7 @@ INCLUDES := -I./ -I../ -I../include/
 
 .PHONY: clean
 
-all: utility.o print.o printf.o kclock.o
+all: utility.o print.o printf.o kclock.o env.o kernel_elfloader.o sched.o
 
 clean:
 	rm -rf *~ *.o

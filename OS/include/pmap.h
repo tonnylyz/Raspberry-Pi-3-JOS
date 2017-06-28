@@ -55,4 +55,5 @@ void page_remove(Pde *pgdir, u_long va);
 
 void tlb_invalidate(Pde *pgdir, u_long va);
 
+void bcopy(const void *src, void *dst, size_t len);
 #endif //OSLABPI_PMAP_H

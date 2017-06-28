@@ -43,7 +43,7 @@ extern u32  get_ptr(u32);
 #define mmio_read get_ptr
 #define mmio_write set_ptr
 
-#define EMMC_DEBUG
+//#define EMMC_DEBUG
 
 int emmc_init();
 int sd_read(struct block_device *, u8 *, size_t buf_size, u32);

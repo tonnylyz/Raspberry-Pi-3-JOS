@@ -1,3 +1,1 @@
-"C:\Program Files (x86)\JetBrains\CLion 2017.1\bin\cmake\bin\cmake.exe" -E remove -f CMakeFiles\nouse.dir/objects.a
-D:\Program\MinGW\bin\ar.exe cr CMakeFiles\nouse.dir/objects.a @CMakeFiles\nouse.dir\objects1.rsp
-D:\Program\MinGW\bin\gcc.exe  -g   -Wl,--whole-archive CMakeFiles\nouse.dir/objects.a -Wl,--no-whole-archive  -o nouse.exe -Wl,--out-implib,libnouse.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\nouse.dir\linklibs.rsp
+/usr/bin/cc  -g   CMakeFiles/nouse.dir/dummy.c.o  -o nouse -rdynamic 

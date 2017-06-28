@@ -1,3 +1,4 @@
+#include <syscall_all.h>
 #include <drivers/include/uart.h>
 #include <mmu.h>
 #include <env.h>

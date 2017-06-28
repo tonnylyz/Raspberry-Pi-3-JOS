@@ -1,30 +1,22 @@
-INCLUDES = -I../include/
-
-#CROSS_COMPILE := /usr/eldk/usr/bin/mips_4KC-
-#CC			  := $(CROSS_COMPILE)gcc
-#CFLAGS		  := -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC
-#LD			  := $(CROSS_COMPILE)ld
-# For embedding one program in another
+INCLUDES = -I../include/ -I./
 
 USERLIB := printf.o \
 		print.o \
-		libos.o \
-		fork.o \
-		pgfault.o \
-		syscall_lib.o \
-		ipc.o \
 		string.o \
-		fd.o \
-		pageref.o \
-		file.o \
-		pipe.o \
-		fsipc.o \
-		console.o \
-		fprintf.o
+		syscall.o
+
+CROSS  := /home/tonny/linaro-elf/bin/aarch64-elf-
+CFLAGS := -Wall -ffreestanding
+CC     := $(CROSS)gcc
+LD     := $(CROSS)ld
 
 CFLAGS += -nostdlib -static
 
 all: fktest.x fktest.b pingpong.x pingpong.b idle.x $(USERLIB) entry.o syscall_wrap.o
+
+test: pi-test-a.c $(USERLIB)
+	$(CC) $(CFLAGS) $(INCLUDES) -c pi-test-a.c -o pi-test-a.o
+	$(LD) -o pi-test-a.b -e umain -T ./user.lds pi-test-a.o $(USERLIB)
 
 %.x: %.b.c
 	echo cc1 $<
@@ -56,4 +48,3 @@ all: fktest.x fktest.b pingpong.x pingpong.b idle.x $(USERLIB) entry.o syscall_w
 clean:
 	rm -rf *~ *.o *.b.c *.x *.b
 
-include ../include.mk

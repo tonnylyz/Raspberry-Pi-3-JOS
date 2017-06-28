@@ -1,7 +1,7 @@
 #include <env.h>
 #include <pmap.h>
 
-void sched_yield(void)
+void sched_yield()
 {
     static int i = 0;
     while (1) {
