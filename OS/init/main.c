@@ -1,28 +1,18 @@
 #include <printf.h>
-#include <uart.h>
 #include <pmap.h>
-#include <emmc.h>
+#include <kclock.h>
+#include <drivers/include/uart.h>
+#include <drivers/include/timer.h>
 
 void main() {
     uart_init();
     printf("System started!\n");
 
     page_init();
-
     printf("page_init done.\n");
 
-    emmc_init();
-    printf("emmc_init done.\n");
-
-    char blk0[512];
-    emmc_read_sector(0, blk0);
-
-    int i;
-    for (i = 0; i < 512; i++) {
-        if (i % 32 == 0)
-            printf("\n");
-        printf("%02x ", blk0[i]);
-    }
+    kclock_init();
+    printf("kclock_init done.\n");
 
     char c;
     while (1) {
@@ -33,4 +23,11 @@ void main() {
             printcharc(c);
         }
     }
+}
+
+void handle_int() {
+    // handle clock int only!
+    clear_clock_int();
+    printf("Clock tick");
+    setup_clock_int(0);
 }

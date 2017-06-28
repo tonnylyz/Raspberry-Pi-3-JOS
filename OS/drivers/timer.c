@@ -31,6 +31,9 @@ extern u32  get_ptr(u32);
 #define TIMER_BASE		0x3F003000
 #define TIMER_CLO		0x4
 
+#define TIMER_C3		0x18
+#define TIMER_INT		0x3F00B210
+
 static u32 timer_base = TIMER_BASE;
 
 void timer_set_base(u32 base)
@@ -88,3 +91,15 @@ int compare_timer(struct timer_wait tw)
 	return 0;
 }
 
+void setup_clock_int(u32 ns) {
+    static u32 last;
+    if (ns != 0) {
+        last = ns;
+    }
+	mmio_write(TIMER_INT, 1 << 3);
+	mmio_write(timer_base + TIMER_C3, last + mmio_read(timer_base + TIMER_CLO));
+}
+
+void clear_clock_int() {
+    mmio_write(timer_base, 1 << 3);
+}

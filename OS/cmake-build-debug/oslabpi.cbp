@@ -36,6 +36,7 @@
 				<Compiler>
 					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/include"/>
 					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/."/>
+					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/drivers/include"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/mingw32"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/backward"/>
@@ -59,6 +60,7 @@
 				<Compiler>
 					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/include"/>
 					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/."/>
+					<Add directory="C:/Users/me/Desktop/lab/rpi-1/OS/drivers/include"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/mingw32"/>
 					<Add directory="d:\program\mingw\bin\../lib/gcc/mingw32/5.3.0/include/c++/backward"/>

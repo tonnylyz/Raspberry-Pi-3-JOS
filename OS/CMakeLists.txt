@@ -4,6 +4,7 @@ project(oslabpi)
 include_directories(
         "include"
         "./"
+        "drivers/include"
 )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c99")
 add_executable(nouse dummy.c)

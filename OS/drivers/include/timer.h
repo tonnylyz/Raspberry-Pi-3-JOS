@@ -36,6 +36,9 @@ int usleep(useconds_t usec);
 struct timer_wait register_timer(useconds_t usec);
 int compare_timer(struct timer_wait tw);
 
+void setup_clock_int(u32);
+void clear_clock_int();
+
 #define TIMEOUT_WAIT(stop_if_true, usec) 		\
 do {							\
 	struct timer_wait tw = register_timer(usec);	\

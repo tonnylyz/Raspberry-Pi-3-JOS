@@ -52,10 +52,10 @@ L1:
     mrs x0, sctlr_el1
     orr x0, x0, #(1 << 12)
     msr sctlr_el1, x0
-/*
+
+// init exception vector table
     ldr x0, =vectors
-    msr vbar_el1, x0         // init exception vector table
-*/
+    msr vbar_el1, x0
 
 // Memory configuration (rp2413)
     ldr x0, =0x04cc

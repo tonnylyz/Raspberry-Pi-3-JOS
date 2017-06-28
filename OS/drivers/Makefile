@@ -1,4 +1,4 @@
-INCLUDES := -I../include
+INCLUDES := -I../include -I./include
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<
