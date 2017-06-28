@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "C:/Users/me/Desktop/rpi-1/OS/dummy.c" "C:/Users/me/Desktop/rpi-1/OS/cmake-build-debug/CMakeFiles/nouse.dir/dummy.c.obj"
+  "C:/Users/me/Desktop/lab/rpi-1/OS/dummy.c" "C:/Users/me/Desktop/lab/rpi-1/OS/cmake-build-debug/CMakeFiles/nouse.dir/dummy.c.obj"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
