@@ -2,5 +2,5 @@
 
 void umain() {
     while (1)
-        writef("a");
+        writef("aaaaaa\n");
 }

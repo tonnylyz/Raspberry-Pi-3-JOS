@@ -1,6 +1,4 @@
 #include "lib.h"
-#include <mmu.h>
-#include <env.h>
 
 void exit(void)
 {

@@ -6,7 +6,6 @@
 #include <drivers/include/uart.h>
 #include <drivers/include/timer.h>
 #include <drivers/include/emmc.h>
-#include <syscall_all.h>
 
 u32 get_el() {
     u32 r;
@@ -15,6 +14,8 @@ u32 get_el() {
     );
     return r;
 }
+
+u_char program[75264];
 
 void main() {
     uart_init();
@@ -25,6 +26,22 @@ void main() {
 
     emmc_init();
     printf("emmc_init done.\n");
+
+    int i;
+    u_int pos = 0;
+    for (i = 0; i < 147; i++)
+    {
+        u_char buf[512];
+        emmc_read_sector(1024 + i, buf);
+        int j;
+        for (j = 0; j <  512; j++) {
+            program[pos + j] = buf[j];
+        }
+        pos += 512;
+        printf("read sec #%d\n", i);
+    }
+
+    env_create(program, 75000);
 
     kclock_init();
     printf("kclock_init done.\n");
@@ -44,10 +61,18 @@ void handle_int() {
     // handle clock int only!
     clear_clock_int();
     printf("Clock tick EL : %d\n", get_el());
-    sched_yield();
+    //sched_yield();
     setup_clock_int(0);
 }
 
-void handle_syscall(u32 no, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5) {
-    sys_putchar(no, a1, a2, a3, a4, a5);
+void handle_pgfault() {
+    printf("\nPGFAULT!\n");
+    u32 r;
+    __asm__ __volatile__ (
+    "mrs %0, far_el1" : "=r"(r)
+    );
+    printf("[ERR] page fault @ [%016x]\n", r);
+    while (1) {
+        empty_loop(0);
+    }
 }

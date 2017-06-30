@@ -18,23 +18,29 @@ struct Page {
 
 extern struct Page *pages;
 
-static inline size_t page2ppn(struct Page *pp) {
-    return (size_t)pp - (size_t)pages;
+static inline u_long page2ppn(struct Page *pp) {
+    return pp - pages;
 }
 
-static inline size_t page2pa(struct Page *pp) {
-    return page2ppn(pp) << PGSHIFT;
+static inline u_long pten2va(u_int pten0, u_int pten1, u_int pten2, u_int pten3) {
+    return (((u_long) pten0 << 39) | ((u_long) pten1 << 30) | ((u_long) pten2 << 21) | ((u_long) pten3 << 12));
 }
 
-static inline struct Page * pa2page(u_long pa) {
-    if (PPN(pa) >= NPAGE) {
-        panic("pa2page called with invalid pa: %x", pa);
+/* Get the physical address of Page 'pp'. */
+static inline u_long page2pa(struct Page *pp) {
+    return (page2ppn(pp) << PGSHIFT);
+}
+
+static inline u_long page2kva(struct Page *pp) {
+    return KADDR(page2ppn(pp) << PGSHIFT);
+}
+
+/* Get the Page struct whose physical address is 'pa'. */
+static inline struct Page *pa2page(u_long pa) {
+    if (PPN(pa) >= MAXPA / BY2PG) {
+        panic("pa2page called with invalid pa: %lx", pa);
     }
     return &pages[PPN(pa)];
-}
-
-static inline size_t page2kva(struct Page *pp) {
-    return KADDR(page2pa(pp));
 }
 
 void page_init(void);
@@ -56,4 +62,6 @@ void page_remove(Pde *pgdir, u_long va);
 void tlb_invalidate(Pde *pgdir, u_long va);
 
 void bcopy(const void *src, void *dst, size_t len);
+void bzero(size_t b, size_t len);
+
 #endif //OSLABPI_PMAP_H

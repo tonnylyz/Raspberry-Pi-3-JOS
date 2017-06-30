@@ -258,13 +258,9 @@ static u32 sd_get_base_clock_hz()
 #if SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
 static int bcm_2708_power_off()
 {
-
-    printf("bcm_2708_power_off : %d\n", __LINE__);
-
     u32 mb_addr = &mbox_buf;
     volatile u32 *mailbuffer = (u32 *)mbox_buf;
 
-    printf("bcm_2708_power_off : %d\n", __LINE__);
 	/* Power off the SD card */
 	// set up the buffer
 	mailbuffer[0] = 8 * 4;		// size of this message
@@ -279,15 +275,10 @@ static int bcm_2708_power_off()
 
 	// closing tag
 	mailbuffer[7] = 0;
-
 	// send the message
 	mbox_write(MBOX_PROP, mb_addr);
-
-    printf("bcm_2708_power_off : %d\n", __LINE__);
 	// read the response
 	mbox_read(MBOX_PROP);
-
-    printf("bcm_2708_power_off : %d\n", __LINE__);
 	if(mailbuffer[1] != MBOX_SUCCESS)
 	{
 	    printf("EMMC: bcm_2708_power_off(): property mailbox did not return a valid response.\n");
@@ -366,8 +357,6 @@ static int bcm_2708_power_cycle()
 		return -1;
 
 	usleep(5000);
-
-    printf("bcm_2708_power_cycle : %d\n", __LINE__);
 	return bcm_2708_power_on();
 }
 #endif
@@ -1032,7 +1021,6 @@ static void sd_issue_command(struct emmc_block_dev *dev, u32 command, u32 argume
 
 int sd_card_init()
 {
-    printf("sd_card_init : %d\n", __LINE__);
     // Check the sanity of the sd_commands and sd_acommands structures
     if(sizeof(sd_commands) != (64 * sizeof(u32)))
     {
@@ -1049,7 +1037,6 @@ int sd_card_init()
         return -1;
     }
 
-    printf("sd_card_init : %d\n", __LINE__);
 #if SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
 	// Power cycle the card to ensure its in its startup state
 	if(bcm_2708_power_cycle() != 0)
@@ -1061,8 +1048,6 @@ int sd_card_init()
 		printf("EMMC: BCM2708 controller power-cycled\n");
 #endif
 #endif
-
-    printf("sd_card_init : %d\n", __LINE__);
 	// Read the controller version
 	u32 ver = mmio_read(emmc_base + EMMC_SLOTISR_VER);
 	u32 vendor = ver >> 24;

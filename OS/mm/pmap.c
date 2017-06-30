@@ -10,12 +10,14 @@ void page_init(void) {
     for (i = 0; i < used_index; i++) {
         pages[i].pp_ref = 1;
     }
+    printf("pages used_index %016x\n", used_index);
     for (i = used_index; i < MAXPA / BY2PG; i++) {
         LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
     }
+    printf("pages size %016x\n", MAXPA / BY2PG);
 }
 
-void page_bzero(size_t b, size_t len) {
+void bzero(size_t b, size_t len) {
     u_long max = (u_long)b + len;
     while ((u_long)b + 7 < max) {
         *(u_long *) b = 0;
@@ -42,15 +44,15 @@ void bcopy(const void *src, void *dst, size_t len) {
 }
 
 int page_alloc(struct Page **pp) {
-    struct Page *ppage_temp;
-    ppage_temp = LIST_FIRST(&page_free_list);
-    if (ppage_temp == NULL) {
+    struct Page *page;
+    page = LIST_FIRST(&page_free_list);
+    if (page == NULL) {
         return -E_NO_MEM;
     }
-    LIST_REMOVE(ppage_temp, pp_link);
-    page_bzero(page2kva(ppage_temp), BY2PG);
-    ppage_temp->pp_ref = 0;
-    *pp = ppage_temp;
+    LIST_REMOVE(page, pp_link);
+    bzero(page2kva(page), BY2PG);
+    page->pp_ref = 0;
+    *pp = page;
     return 0;
 }
 
@@ -129,6 +131,7 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
 
     pgdir_walk(pgdir, va, 0, &pgtable_entry);
 
+    printf("page_insert %d \n", __LINE__);
     if (pgtable_entry != 0 && (*pgtable_entry & PTE_V) != 0) {
         if (pa2page(*pgtable_entry) != pp) {
             page_remove(pgdir, va);

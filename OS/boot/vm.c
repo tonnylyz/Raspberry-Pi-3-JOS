@@ -73,7 +73,9 @@ void vm_init() {
     freemem = (u_long)KSTACKTOP;
     pgdir = boot_alloc(BY2PG, BY2PG, 1);
     n = ROUND(MAXPA, BY2PG);
+    // 0x00000000 - 0x20000000 Normal memory
     boot_map_segment(pgdir, 0, n, 0, ATTRINDX_NORMAL);
+    // 0x20000000 - 0x40000000 Device I/O
     boot_map_segment(pgdir, n, n, n, ATTRINDX_DEVICE);
 }
 

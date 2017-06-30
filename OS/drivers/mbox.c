@@ -22,8 +22,8 @@
 #include <mbox.h>
 #include <types.h>
 
-extern void set_ptr(u32, u32);
-extern u32  get_ptr(u32);
+extern void set_ptr(u64, u64);
+extern u64  get_ptr(u64);
 #define mmio_read get_ptr
 #define mmio_write set_ptr
 

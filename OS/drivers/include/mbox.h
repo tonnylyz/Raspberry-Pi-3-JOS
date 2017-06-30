@@ -23,8 +23,9 @@
 #define MBOX_H
 
 #include <types.h>
+#include <mmu.h>
 
-#define MBOX_BASE 0x3f00b880
+#define MBOX_BASE KADDR(0x3f00b880)
 
 #define MBOX_PEEK 0x10
 #define MBOX_READ 0x00

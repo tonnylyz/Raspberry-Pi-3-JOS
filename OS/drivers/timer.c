@@ -22,17 +22,18 @@
 #include <timer.h>
 #include <types.h>
 #include <error.h>
+#include <mmu.h>
 
-extern void set_ptr(u32, u32);
-extern u32  get_ptr(u32);
+extern void set_ptr(u64, u64);
+extern u64  get_ptr(u64);
 #define mmio_read get_ptr
 #define mmio_write set_ptr
 
-#define TIMER_BASE		0x3F003000
+#define TIMER_BASE		KADDR(0x3F003000)
 #define TIMER_CLO		0x4
 
 #define TIMER_C3		0x18
-#define TIMER_INT		0x3F00B210
+#define TIMER_INT		KADDR(0x3F00B210)
 
 static u32 timer_base = TIMER_BASE;
 

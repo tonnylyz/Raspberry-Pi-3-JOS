@@ -1,7 +1,9 @@
 #ifndef OSLABPI_MMU_H
 #define OSLABPI_MMU_H
 
+#ifndef USER_PROGRAM
 #include "types.h"
+#endif
 
 #define BY2PG        4096
 #define PDMAP        (4 * 1024 * 1024)    // bytes mapped by a page directory entry
@@ -51,13 +53,14 @@
 #define MAXPA       0x20000000
 
 
+#define KADDR(pa) ((u_long)(pa) + 0xFFFFFF0000000000uL)
+
 typedef u_long Pge;
 typedef u_long Pde;
 typedef u_long Pme;
 typedef u_long Pte;
 
 
-#define KADDR(pa) ((u_long)(pa) | 0xFFFFFF0000000000)
 
 #define assert(x)                        \
 do {    if (!(x)) panic("assertion failed: %s", #x); } while (0)

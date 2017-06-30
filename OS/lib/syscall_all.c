@@ -1,4 +1,3 @@
-#include <syscall_all.h>
 #include <drivers/include/uart.h>
 #include <mmu.h>
 #include <env.h>
@@ -6,19 +5,7 @@
 #include <pmap.h>
 #include <sched.h>
 
-extern char *KERNEL_SP;
 extern struct Env *curenv;
-
-static void *memcpy(void *destaddr, void const *srcaddr, u_int len) {
-    char *dest = destaddr;
-    char const *src = srcaddr;
-
-    while (len-- > 0) {
-        *dest++ = *src++;
-    }
-
-    return destaddr;
-}
 
 void sys_putchar(int sysno, int c, int a2, int a3, int a4, int a5) {
     printcharc((char) c);
@@ -30,8 +17,8 @@ u_int sys_getenvid(void) {
 }
 
 void sys_yield(void) {
-    bcopy((u_int) KERNEL_SP - sizeof(struct Trapframe),
-          TIMESTACK - sizeof(struct Trapframe),
+    bcopy((u_int) KSTACKTOP - sizeof(struct Trapframe),
+          TIMESTACKTOP - sizeof(struct Trapframe),
           sizeof(struct Trapframe));
 
     sched_yield();
@@ -56,10 +43,7 @@ int sys_set_pgfault_handler(int sysno, u_int envid, u_int func, u_int xstacktop)
     if (ret < 0)
         return ret;
     env->env_pgfault_handler = func;
-
-    xstacktop = TRUP(xstacktop);
     env->env_xstacktop = xstacktop;
-
     return 0;
 }
 
@@ -67,6 +51,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm) {
     struct Env *env;
     struct Page *ppage;
     int ret;
+    /*
     if (perm & PTE_V == 0 || perm & PTE_COW != 0) {
         printf("[ERR] perm\n");
         return -E_INVAL;
@@ -74,7 +59,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm) {
     if (va >= UTOP) {
         printf("[ERR] va\n");
         return -1;
-    }
+    }*/
     // Get env
     ret = envid2env(envid, &env, 0);
     if (ret < 0) {
@@ -90,7 +75,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm) {
     // Clean page
     bzero(page2kva(ppage), BY2PG);
     // Insert page to env
-    ret = page_insert(env->env_pgdir, ppage, va, perm | PTE_R | PTE_V);
+    ret = page_insert(env->env_pgdir, ppage, va, perm | ATTRIB_AP_RW_ALL);
     if (ret < 0) {
         printf("[ERR] page_insert\n");
         return ret;
@@ -111,7 +96,7 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva, u
     round_srcva = ROUNDDOWN(srcva, BY2PG);
     round_dstva = ROUNDDOWN(dstva, BY2PG);
     // va restriction
-    if (srcva >= UTOP || dstva >= UTOP || srcva != round_srcva || dstva != round_dstva) {
+    if (srcva != round_srcva || dstva != round_dstva) {
         printf("[ERR] va\n");
         return -1;
     }
@@ -160,7 +145,7 @@ int sys_env_alloc(void) {
     if (r < 0) {
         return r;
     }
-    bcopy(KERNEL_SP - sizeof(struct Trapframe), &e->env_tf, sizeof(struct Trapframe));
+    bcopy(KSTACKTOP - sizeof(struct Trapframe), &e->env_tf, sizeof(struct Trapframe));
     Pte *ppte = NULL;
     pgdir_walk(curenv->env_pgdir, USTACKTOP - BY2PG, 0, &ppte);
     if (ppte != NULL) {
@@ -168,11 +153,10 @@ int sys_env_alloc(void) {
         ppp = pa2page(PTE_ADDR(*ppte));
         page_alloc(&ppc);
         bcopy(page2kva(ppp), page2kva(ppc), BY2PG);
-        page_insert(e->env_pgdir, ppc, USTACKTOP - BY2PG, PTE_R | PTE_V);
+        page_insert(e->env_pgdir, ppc, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     }
-    e->env_tf.pc = e->env_tf.cp0_epc;
     e->env_status = ENV_NOT_RUNNABLE;
-    e->env_tf.regs[2] = 0;
+    //e->env_tf.regs[2] = 0;
     return e->env_id;
 }
 
@@ -199,9 +183,6 @@ void sys_panic(int sysno, char *msg) {
 }
 
 void sys_ipc_recv(int sysno, u_int dstva) {
-    if (dstva > UTOP) {
-        return;
-    }
     curenv->env_ipc_dstva = dstva;
     curenv->env_ipc_recving = 1;
     curenv->env_status = ENV_NOT_RUNNABLE;
@@ -211,7 +192,6 @@ void sys_ipc_recv(int sysno, u_int dstva) {
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva, u_int perm) {
     int r;
     struct Env *e;
-    struct Page *p;
     r = envid2env(envid, &e, 0);
     if (r < 0) {
         return -E_BAD_ENV;

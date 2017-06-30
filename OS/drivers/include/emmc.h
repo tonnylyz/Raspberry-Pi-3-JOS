@@ -37,9 +37,10 @@
 #include <timer.h>
 #include <types.h>
 #include <block.h>
+#include <mmu.h>
 
-extern void set_ptr(u32, u32);
-extern u32  get_ptr(u32);
+extern void set_ptr(u64, u64);
+extern u64  get_ptr(u64);
 #define mmio_read get_ptr
 #define mmio_write set_ptr
 
@@ -130,7 +131,7 @@ struct emmc_block_dev
     u32 base_clock;
 };
 
-#define EMMC_BASE		0x3f300000
+#define EMMC_BASE		KADDR(0x3f300000)
 #define	EMMC_ARG2		0
 #define EMMC_BLKSIZECNT		4
 #define EMMC_ARG1		8

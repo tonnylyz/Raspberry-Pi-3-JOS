@@ -6,8 +6,8 @@
 #include <pmap.h>
 #include <printf.h>
 
-struct Env *envs = NULL;		// All environments
-struct Env *curenv = NULL;	        // the current env
+struct Env *envs = (struct Env *)KERNEL_ENVS;		// All environments
+struct Env *curenv;	        // the current env
 
 static struct Env_list env_free_list;	// Free list
 
@@ -84,6 +84,7 @@ int env_alloc(struct Env **new, u_int parent_id)
 
     LIST_REMOVE(e, env_link);
     *new = e;
+    printf("env %d \n", __LINE__);
     return 0;
 }
 
@@ -97,13 +98,13 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize, u_char *bin, u_int32_t
 	for (i = 0; i < bin_size; i += BY2PG) {
         r = page_alloc(&p);
         if (r < 0) {
-            panic("Allocate page failed.");
+            printf("Allocate page failed.");
             return r;
         }
         p->pp_ref++;
         r = page_insert(env->env_pgdir, p, va - offset + i, ATTRIB_AP_RW_ALL);
         if (r < 0) {
-            panic("Insert page failed.");
+            printf("Insert page failed.");
             return r;
         }
         bcopy(bin + i, (void *) page2kva(p) + offset, MIN(BY2PG, bin_size - i));
@@ -111,13 +112,13 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize, u_char *bin, u_int32_t
 	while (i < sgsize) {
         r = page_alloc(&p);
         if (r < 0) {
-            panic("Allocate page failed.");
+            printf("Allocate page failed.");
             return r;
         }
         p->pp_ref++;
         r = page_insert(env->env_pgdir, p, va - offset + i, ATTRIB_AP_RW_ALL);
         if (r < 0) {
-            panic("Insert page failed.");
+            printf("Insert page failed.");
             return r;
         }
         i += BY2PG;
@@ -133,17 +134,19 @@ static void load_icode(struct Env *e, u_char *binary, u_int size)
     //u_long perm;
     r = page_alloc(&p);
     if (r < 0) {
-        panic("Allocate page failed.");
+        printf("Allocate page failed.");
     }
+    printf("load_icode %d \n", __LINE__);
     r = page_insert(e->env_pgdir, p, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     if (r < 0) {
-        panic("Insert page failed.");
+        printf("Insert page failed.");
     }
+    printf("load_icode %d \n", __LINE__);
     r = load_elf(binary, size, &entry_point, e, load_icode_mapper);
     if (r < 0) {
-        panic("Load elf failed.");
+        printf("Load elf failed.");
     }
-
+    printf("load_icode %d \n", __LINE__);
 	e->env_tf.elr = entry_point;
 }
 

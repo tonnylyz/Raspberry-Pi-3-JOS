@@ -1,7 +1,9 @@
 #ifndef _TRAP_H_
 #define _TRAP_H_
 
+#ifndef USER_PROGRAM
 #include <types.h>
+#endif
 
 struct Trapframe {
     /* Saved special registers. */
@@ -12,7 +14,7 @@ struct Trapframe {
     /* Saved main processor registers. */
     u_long regs[31];
 };
-void *set_except_vector(int n, void *addr);
+
 void trap_init();
 
 #endif

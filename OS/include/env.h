@@ -3,10 +3,13 @@
 #ifndef _ENV_H_
 #define _ENV_H_
 
+#ifndef USER_PROGRAM
 #include "types.h"
+#endif
+
+#include "mmu.h"
 #include "queue.h"
 #include "trap.h"
-#include "mmu.h"
 
 #define LOG2NENV	10
 #define NENV		(1<<LOG2NENV)
@@ -26,15 +29,15 @@ struct Env {
 	u_int env_status;               // Status of the environment
 	Pde  *env_pgdir;                // Kernel virtual address of page dir
 	// Lab 4 IPC
-	u_int env_ipc_value;            // data value sent to us
-	u_int env_ipc_from;             // envid of the sender
-	u_int env_ipc_recving;          // env is blocked receiving
-	u_int env_ipc_dstva;		// va at which to map received page
-	u_int env_ipc_perm;		// perm of page mapping received
+	u_long env_ipc_value;            // data value sent to us
+	u_long env_ipc_from;             // envid of the sender
+	u_long env_ipc_recving;          // env is blocked receiving
+	u_long env_ipc_dstva;		// va at which to map received page
+	u_long env_ipc_perm;		// perm of page mapping received
 
 	// Lab 4 fault handling
-	u_int env_pgfault_handler;      // page fault state
-	u_int env_xstacktop;            // top of exception stack
+	u_long env_pgfault_handler;      // page fault state
+	u_long env_xstacktop;            // top of exception stack
 
 	// Lab 6 scheduler counts
 	u_int env_runs;			// number of times been env_run'ed

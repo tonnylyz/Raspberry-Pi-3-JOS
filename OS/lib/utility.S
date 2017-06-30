@@ -16,7 +16,6 @@ empty_loop:
 .macro push_time_stack
     str x0, [sp, #-16]!
     ldr x0, =0xffffff0001751000             // TIMESTACKTOP
-
     stp x29, x30, [x0, #-16]!
     stp x27, x28, [x0, #-16]!
     stp x25, x26, [x0, #-16]!
@@ -32,32 +31,25 @@ empty_loop:
     stp x5, x6, [x0, #-16]!
     stp x3, x4, [x0, #-16]!
     stp x1, x2, [x0, #-16]!
-
     mov x21, x0
     ldr x0, [sp], #16
     mrs x20, sp_el0
     stp x20, x0, [x21, #-16]!
-
     mrs x19, esr_el1
     mrs x20, elr_el1
     stp x20, x19, [x21, #-16]!
-
     mrs x19, spsr_el1
     str x19, [x21, #-8]!
 .endm
 
 .macro pop_time_stack
     ldr x30, =0xffffff0001750ee8            // TIMESTACK
-
     ldr x0, [x30], #8
     msr spsr_el1, x0
-
     ldp x0, x1, [x30], #16
     msr elr_el1, x0
-
     ldp x1, x0, [x30], #16
     msr sp_el0, x1
-
     ldp x1, x2, [x30], #16
     ldp x3, x4, [x30], #16
     ldp x5, x6, [x30], #16
@@ -107,10 +99,11 @@ vectors:
 .globl el1_sync
 el1_sync:
     push_time_stack
-    mrs x19, esr_el1
-    lsr x19, x19, #26
-    cmp x19, #0x15
-    b.eq handle_syscall
+    ldr x19, =0xFFFFFF0001000000// kernel stack
+    mov sp, x19
+    str x30, [sp, #-8]!         // save x30 at first
+    bl handle_pgfault
+    ldr x30, [sp], #8
     pop_time_stack
     eret
 
