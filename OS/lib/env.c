@@ -56,7 +56,7 @@ static int env_setup_vm(struct Env *e)
 	struct Page *p = NULL;
 	u_long *pgdir;
 	if ((r = page_alloc(&p)) < 0) {
-		panic("env_setup_vm - page_alloc error\n");
+		printf("env_setup_vm - page_alloc error\n");
 		return r;
 	}
 	p->pp_ref++;
@@ -70,11 +70,15 @@ int env_alloc(struct Env **new, u_int parent_id)
 	int r;
 	struct Env *e;
     e = LIST_FIRST(&env_free_list);
-    if (e == NULL)
+    if (e == NULL) {
+        printf("E_NO_FREE_ENV err %d\n", e);
         return -E_NO_FREE_ENV;
+    }
     r = env_setup_vm(e);
-    if (r < 0)
+    if (r < 0) {
+        printf("env_setup_vm err %d\n", r);
         return r;
+    }
     e->env_id = mkenvid(e);
     e->env_parent_id = parent_id;
     e->env_status = ENV_RUNNABLE;
@@ -84,7 +88,6 @@ int env_alloc(struct Env **new, u_int parent_id)
 
     LIST_REMOVE(e, env_link);
     *new = e;
-    printf("env %d \n", __LINE__);
     return 0;
 }
 
@@ -131,23 +134,25 @@ static void load_icode(struct Env *e, u_char *binary, u_int size)
 	struct Page *p = NULL;
 	u_long entry_point;
 	u_long r;
-    //u_long perm;
+
     r = page_alloc(&p);
     if (r < 0) {
         printf("Allocate page failed.");
     }
-    printf("load_icode %d \n", __LINE__);
+    printf("load_icode page_alloc done %d \n", __LINE__);
     r = page_insert(e->env_pgdir, p, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     if (r < 0) {
         printf("Insert page failed.");
     }
-    printf("load_icode %d \n", __LINE__);
+    printf("load_icode page_insert done %d \n", __LINE__);
     r = load_elf(binary, size, &entry_point, e, load_icode_mapper);
     if (r < 0) {
         printf("Load elf failed.");
     }
-    printf("load_icode %d \n", __LINE__);
+    printf("load_icode load_elf done %d \n", __LINE__);
 	e->env_tf.elr = entry_point;
+
+    printf("[LOG] load_icode entry_point [%l016x]\n", entry_point);
 }
 
 void env_create(u_char *binary, int size)
@@ -193,5 +198,5 @@ void env_run(struct Env *e)
     bcopy(&curenv->env_tf, old, sizeof(struct Trapframe));
 
     set_ttbr0((u_long)curenv->env_pgdir);
-    tlb_invalidate(NULL, 0);
+    tlb_invalidate();
 }

@@ -32,7 +32,7 @@ static inline u_long page2pa(struct Page *pp) {
 }
 
 static inline u_long page2kva(struct Page *pp) {
-    return KADDR(page2ppn(pp) << PGSHIFT);
+    return KADDR((u_long)(page2ppn(pp) << PGSHIFT));
 }
 
 /* Get the Page struct whose physical address is 'pa'. */
@@ -59,9 +59,9 @@ struct Page *page_lookup(Pde *pgdir, u_long va, Pte **ppte);
 
 void page_remove(Pde *pgdir, u_long va);
 
-void tlb_invalidate(Pde *pgdir, u_long va);
+void tlb_invalidate();
 
 void bcopy(const void *src, void *dst, size_t len);
-void bzero(size_t b, size_t len);
+void bzero(void* b, size_t len);
 
 #endif //OSLABPI_PMAP_H

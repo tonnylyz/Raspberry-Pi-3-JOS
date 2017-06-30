@@ -10,14 +10,12 @@ void page_init(void) {
     for (i = 0; i < used_index; i++) {
         pages[i].pp_ref = 1;
     }
-    printf("pages used_index %016x\n", used_index);
     for (i = used_index; i < MAXPA / BY2PG; i++) {
         LIST_INSERT_HEAD(&page_free_list, &pages[i], pp_link);
     }
-    printf("pages size %016x\n", MAXPA / BY2PG);
 }
 
-void bzero(size_t b, size_t len) {
+void bzero(void* b, size_t len) {
     u_long max = (u_long)b + len;
     while ((u_long)b + 7 < max) {
         *(u_long *) b = 0;
@@ -50,7 +48,7 @@ int page_alloc(struct Page **pp) {
         return -E_NO_MEM;
     }
     LIST_REMOVE(page, pp_link);
-    bzero(page2kva(page), BY2PG);
+    bzero((void *)page2kva(page), BY2PG);
     page->pp_ref = 0;
     *pp = page;
     return 0;
@@ -120,6 +118,12 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte) {
         pte = (u_long *)KADDR(pte);
         ppage->pp_ref = 1;
     }
+
+    printf("[LOG] pge [%l016x]\n", *pge);
+    printf("[LOG] pde [%l016x]\n", *pde);
+    printf("[LOG] pme [%l016x]\n", *pme);
+    printf("[LOG] pte [%l016x]\n", *pte);
+
     *ppte = pte;
     return 0;
 }
@@ -129,24 +133,28 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
     Pte *pgtable_entry;
     PERM = perm | PTE_V | ATTRINDX_NORMAL | ATTRIB_SH_INNER_SHAREABLE | AF;
 
-    pgdir_walk(pgdir, va, 0, &pgtable_entry);
-
+    pgdir_walk(pgdir, va, 1, &pgtable_entry);
+    /*
     printf("page_insert %d \n", __LINE__);
     if (pgtable_entry != 0 && (*pgtable_entry & PTE_V) != 0) {
         if (pa2page(*pgtable_entry) != pp) {
             page_remove(pgdir, va);
         } else {
-            tlb_invalidate(pgdir, va);
+            tlb_invalidate();
             *pgtable_entry = (PTE_ADDR(page2pa(pp)) | PERM);
             return 0;
         }
     }
-    tlb_invalidate(pgdir, va);
+    printf("page_insert %d \n", __LINE__);
+    tlb_invalidate();
     if (pgdir_walk(pgdir, va, 1, &pgtable_entry) != 0) {
         return -E_NO_MEM;
     }
+    */
     *pgtable_entry = (PTE_ADDR(page2pa(pp)) | PERM);
+    printf("[LOG] new pte [%l016x]\n", (PTE_ADDR(page2pa(pp)) | PERM));
     pp->pp_ref++;
+    printf("page_insert %d \n", __LINE__);
     return 0;
 }
 
@@ -185,11 +193,12 @@ void page_remove(Pde *pgdir, u_long va) {
         page_free(ppage);
     }
     *pagetable_entry = 0;
-    tlb_invalidate(pgdir, va);
+    tlb_invalidate();
 }
 
 
-void tlb_invalidate(Pde *pgdir, u_long va) {
+void tlb_invalidate() {
+    return;
     __asm__ __volatile__ (
         "dsb ishst\n\t"
         "tlbi vmalle1is\n\t"

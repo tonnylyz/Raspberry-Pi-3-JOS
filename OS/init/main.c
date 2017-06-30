@@ -27,6 +27,9 @@ void main() {
     emmc_init();
     printf("emmc_init done.\n");
 
+    env_init();
+    printf("env_init done.\n");
+
     int i;
     u_int pos = 0;
     for (i = 0; i < 147; i++)
@@ -38,7 +41,7 @@ void main() {
             program[pos + j] = buf[j];
         }
         pos += 512;
-        printf("read sec #%d\n", i);
+        //printf("read sec #%d\n", i);
     }
 
     env_create(program, 75000);
@@ -60,8 +63,8 @@ void main() {
 void handle_int() {
     // handle clock int only!
     clear_clock_int();
-    printf("Clock tick EL : %d\n", get_el());
-    //sched_yield();
+    printf("Clock tick\n");
+    sched_yield();
     setup_clock_int(0);
 }
 
@@ -71,8 +74,17 @@ void handle_pgfault() {
     __asm__ __volatile__ (
     "mrs %0, far_el1" : "=r"(r)
     );
-    printf("[ERR] page fault @ [%016x]\n", r);
+    printf("[ERR] page fault @ [%l016x]\n", r);
     while (1) {
         empty_loop(0);
     }
+}
+
+void handle_err() {
+
+    printf("\nKERNEL DIE!\n");
+    while (1) {
+        empty_loop(0);
+    }
+
 }

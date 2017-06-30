@@ -99,13 +99,30 @@ vectors:
 .globl el1_sync
 el1_sync:
     push_time_stack
+    mrs x19, esr_el1
+    lsr x19, x19, #26
+    cmp x19, #0x24
+    b.eq el1_sync_pgfault
+    cmp x19, #0x15
+    b.eq el1_sync_syscall
+    bl handle_err
+el1_sync_end:
+    pop_time_stack
+    eret
+
+el1_sync_pgfault:
     ldr x19, =0xFFFFFF0001000000// kernel stack
     mov sp, x19
     str x30, [sp, #-8]!         // save x30 at first
     bl handle_pgfault
     ldr x30, [sp], #8
-    pop_time_stack
-    eret
+    b el1_sync_end
+
+el1_sync_syscall:
+    mrs x20, sp_el0
+    mov sp, x20
+    bl sys_putchar
+    b el1_sync_end
 
 .globl el1_fiq
 el1_fiq:
@@ -119,6 +136,8 @@ el1_err:
 .globl el1_irq
 el1_irq:
     push_time_stack
+    ldr x19, =0xFFFFFF0001000000// kernel stack
+    mov sp, x19
     bl handle_int
     pop_time_stack
     eret
