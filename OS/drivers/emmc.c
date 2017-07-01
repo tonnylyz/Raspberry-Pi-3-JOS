@@ -15,7 +15,7 @@ static u32 hci_ver = 0;
 static u32 capabilities_0 = 0;
 static u32 capabilities_1 = 0;
 
-static u32 emmc_base = EMMC_BASE;
+static u64 emmc_base = EMMC_BASE;
 
 static char *sd_versions[] = { "unknown", "1.0 and 1.01", "1.10",
                                "2.00", "3.0x", "4.xx" };
@@ -206,7 +206,8 @@ static u32 sd_get_base_clock_hz()
     capabilities_0 = mmio_read(emmc_base + EMMC_CAPABILITIES_0);
     base_clock = ((capabilities_0 >> 8) & 0xff) * 1000000;
 #elif SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
-	u32 mb_addr = &mbox_buf;
+    // TODO: mail box should not use low address!
+	u32 mb_addr = (u32)&mbox_buf;
 	volatile u32 *mailbuffer = (u32 *)mbox_buf;
 
 	/* Get the base clock rate */
@@ -1441,12 +1442,12 @@ int sd_card_init()
 	    printf("SD: error sending ALL_SEND_CID\n");
 	    return -1;
 	}
-	u32 card_cid_0 = ret->last_r0;
+#ifdef EMMC_DEBUG
+    u32 card_cid_0 = ret->last_r0;
 	u32 card_cid_1 = ret->last_r1;
 	u32 card_cid_2 = ret->last_r2;
 	u32 card_cid_3 = ret->last_r3;
 
-#ifdef EMMC_DEBUG
 	printf("SD: card CID: %08x%08x%08x%08x\n", card_cid_3, card_cid_2, card_cid_1, card_cid_0);
 #endif
     /*

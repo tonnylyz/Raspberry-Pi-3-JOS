@@ -56,12 +56,4 @@ void env_destroy(struct Env *e);
 int envid2env(u_int envid, struct Env **penv, int checkperm);
 void env_run(struct Env *e);
 
-#define ENV_CREATE(x) \
-	{ \
-		extern u_char binary_##x##_start[];\
-		extern u_int binary_##x##_size; \
-		env_create(binary_##x##_start, \
-				   (u_int)binary_##x##_size); \
-	}
-
 #endif // !_ENV_H_

@@ -1,21 +1,53 @@
+// Assembly Utilities
+
+// u32 get_ptr(u64 addr);
 .global get_ptr
 get_ptr:
     ldr w0, [x0]
     ret
 
+// void set_ptr(u64 addr, u32 value)
 .global set_ptr
 set_ptr:
     str w1, [x0]
     ret
 
+// void empty_loop()
+//  do nothing
 .global empty_loop
 empty_loop:
     ret
 
+// void set_ttbr0(u64 paddr)
+//  set ttbr0 (low address page table base register)
+.global set_ttbr0
+set_ttbr0:
+    msr ttbr0_el1, x0
+    ret
 
+// void tlb_invalidate()
+//  Invalidate all tlb enties
+//  TODO: More detailed invalidation (by ASID)
+.global tlb_invalidate
+tlb_invalidate:
+    dsb ishst
+    tlbi vmalle1is
+    dsb ish
+    isb
+    ret
+
+/////////////////////////////////////////////////////////////
+//                          Trap                           //
+/////////////////////////////////////////////////////////////
+
+// Time stack top    : 0xFFFFFF0001751000
+// Time stack bottom : 0xFFFFFF0001750ee8
+// See `Trapframe` struct in `trap.h`
+
+// Save current trapframe
 .macro push_time_stack
     str x0, [sp, #-16]!
-    ldr x0, =0xffffff0001751000             // TIMESTACKTOP
+    ldr x0, =0xffffff0001751000
     stp x29, x30, [x0, #-16]!
     stp x27, x28, [x0, #-16]!
     stp x25, x26, [x0, #-16]!
@@ -42,8 +74,9 @@ empty_loop:
     str x19, [x21, #-8]!
 .endm
 
+// Restore trapframe
 .macro pop_time_stack
-    ldr x30, =0xffffff0001750ee8            // TIMESTACK
+    ldr x30, =0xffffff0001750ee8
     ldr x0, [x30], #8
     msr spsr_el1, x0
     ldp x0, x1, [x30], #16
@@ -95,8 +128,7 @@ vectors:
     vector el1_fiq
     vector el1_err
 
-// System call and PGFAULT
-.globl el1_sync
+// Syscall and Pgfault
 el1_sync:
     push_time_stack
     mrs x19, esr_el1
@@ -124,19 +156,16 @@ el1_sync_syscall:
     bl sys_putchar
     b el1_sync_end
 
-.globl el1_fiq
 el1_fiq:
     eret
 
-.globl el1_err
 el1_err:
     eret
 
-// Int
-.globl el1_irq
+// Interupt (Clock)
 el1_irq:
     push_time_stack
-    ldr x19, =0xFFFFFF0001000000// kernel stack
+    ldr x19, =0xFFFFFF0001000000
     mov sp, x19
     bl handle_int
     pop_time_stack

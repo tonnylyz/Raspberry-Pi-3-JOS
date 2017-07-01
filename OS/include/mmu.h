@@ -31,22 +31,22 @@
 
 #define USTACKTOP    (0x80000000)
 
-#define PTE_V                     0x3 << 0    // Table Entry Valid bit
-#define PBE_V                     0x1 << 0    // Block Entry Valid bit
-#define ATTRIB_AP_RW_EL1          0x0 << 6
-#define ATTRIB_AP_RW_ALL          0x1 << 6
-#define ATTRIB_AP_RO_EL1          0x2 << 6
-#define ATTRIB_AP_RO_ALL          0x3 << 6
-#define ATTRIB_SH_NON_SHAREABLE   0x0 << 8
-#define ATTRIB_SH_OUTER_SHAREABLE 0x2 << 8
-#define ATTRIB_SH_INNER_SHAREABLE 0x3 << 8
-#define AF                        0x1 << 10
-#define PXN                       0x0 << 53
-#define UXN                       0x1UL << 54
+#define PTE_V                     (0x3 << 0)    // Table Entry Valid bit
+#define PBE_V                     (0x1 << 0)    // Block Entry Valid bit
+#define ATTRIB_AP_RW_EL1          (0x0 << 6)
+#define ATTRIB_AP_RW_ALL          (0x1 << 6)
+#define ATTRIB_AP_RO_EL1          (0x2 << 6)
+#define ATTRIB_AP_RO_ALL          (0x3 << 6)
+#define ATTRIB_SH_NON_SHAREABLE   (0x0 << 8)
+#define ATTRIB_SH_OUTER_SHAREABLE (0x2 << 8)
+#define ATTRIB_SH_INNER_SHAREABLE (0x3 << 8)
+#define AF                        (0x1 << 10)
+#define PXN                       (0x0 << 53)
+#define UXN                       (0x1UL << 54)
 
-#define ATTRINDX_NORMAL           0 << 2    // inner/outer write-back non-transient, non-allocating
-#define ATTRINDX_DEVICE           1 << 2    // Device-nGnRE
-#define ATTRINDX_COHERENT           2 << 2 // Device-nGnRnE
+#define ATTRINDX_NORMAL           (0 << 2)    // inner/outer write-back non-transient, non-allocating
+#define ATTRINDX_DEVICE           (1 << 2)    // Device-nGnRE
+#define ATTRINDX_COHERENT         (2 << 2) // Device-nGnRnE
 
 
 #define NPAGE       0x40000

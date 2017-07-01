@@ -59,7 +59,7 @@ struct Page *page_lookup(Pde *pgdir, u_long va, Pte **ppte);
 
 void page_remove(Pde *pgdir, u_long va);
 
-void tlb_invalidate();
+extern void tlb_invalidate();
 
 void bcopy(const void *src, void *dst, size_t len);
 void bzero(void* b, size_t len);

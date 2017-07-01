@@ -118,12 +118,6 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte) {
         pte = (u_long *)KADDR(pte);
         ppage->pp_ref = 1;
     }
-
-    printf("[LOG] pge [%l016x]\n", *pge);
-    printf("[LOG] pde [%l016x]\n", *pde);
-    printf("[LOG] pme [%l016x]\n", *pme);
-    printf("[LOG] pte [%l016x]\n", *pte);
-
     *ppte = pte;
     return 0;
 }
@@ -132,29 +126,13 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
     u_int PERM;
     Pte *pgtable_entry;
     PERM = perm | PTE_V | ATTRINDX_NORMAL | ATTRIB_SH_INNER_SHAREABLE | AF;
-
     pgdir_walk(pgdir, va, 1, &pgtable_entry);
-    /*
-    printf("page_insert %d \n", __LINE__);
-    if (pgtable_entry != 0 && (*pgtable_entry & PTE_V) != 0) {
-        if (pa2page(*pgtable_entry) != pp) {
-            page_remove(pgdir, va);
-        } else {
-            tlb_invalidate();
-            *pgtable_entry = (PTE_ADDR(page2pa(pp)) | PERM);
-            return 0;
-        }
+    if ((*pgtable_entry & PTE_V) != 0) {
+        printf("[WARNING] page_insert : a page was already here.\n");
     }
-    printf("page_insert %d \n", __LINE__);
-    tlb_invalidate();
-    if (pgdir_walk(pgdir, va, 1, &pgtable_entry) != 0) {
-        return -E_NO_MEM;
-    }
-    */
     *pgtable_entry = (PTE_ADDR(page2pa(pp)) | PERM);
-    printf("[LOG] new pte [%l016x]\n", (PTE_ADDR(page2pa(pp)) | PERM));
+    tlb_invalidate();
     pp->pp_ref++;
-    printf("page_insert %d \n", __LINE__);
     return 0;
 }
 
@@ -194,15 +172,4 @@ void page_remove(Pde *pgdir, u_long va) {
     }
     *pagetable_entry = 0;
     tlb_invalidate();
-}
-
-
-void tlb_invalidate() {
-    return;
-    __asm__ __volatile__ (
-        "dsb ishst\n\t"
-        "tlbi vmalle1is\n\t"
-        "dsb ish\n\t"
-        "isb\n\t"
-    );
 }

@@ -35,7 +35,7 @@ extern u64  get_ptr(u64);
 #define TIMER_C3		0x18
 #define TIMER_INT		KADDR(0x3F00B210)
 
-static u32 timer_base = TIMER_BASE;
+static u64 timer_base = TIMER_BASE;
 
 void timer_set_base(u32 base)
 {

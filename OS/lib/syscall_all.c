@@ -17,8 +17,8 @@ u_int sys_getenvid(void) {
 }
 
 void sys_yield(void) {
-    bcopy((u_int) KSTACKTOP - sizeof(struct Trapframe),
-          TIMESTACKTOP - sizeof(struct Trapframe),
+    bcopy((void *)(KSTACKTOP - sizeof(struct Trapframe)),
+          (void *)(TIMESTACKTOP - sizeof(struct Trapframe)),
           sizeof(struct Trapframe));
 
     sched_yield();
@@ -73,7 +73,7 @@ int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm) {
         return ret;
     }
     // Clean page
-    bzero(page2kva(ppage), BY2PG);
+    bzero((void *)page2kva(ppage), BY2PG);
     // Insert page to env
     ret = page_insert(env->env_pgdir, ppage, va, perm | ATTRIB_AP_RW_ALL);
     if (ret < 0) {
@@ -145,14 +145,14 @@ int sys_env_alloc(void) {
     if (r < 0) {
         return r;
     }
-    bcopy(KSTACKTOP - sizeof(struct Trapframe), &e->env_tf, sizeof(struct Trapframe));
+    bcopy((void *)(KSTACKTOP - sizeof(struct Trapframe)), &e->env_tf, sizeof(struct Trapframe));
     Pte *ppte = NULL;
     pgdir_walk(curenv->env_pgdir, USTACKTOP - BY2PG, 0, &ppte);
     if (ppte != NULL) {
         struct Page *ppc, *ppp;
         ppp = pa2page(PTE_ADDR(*ppte));
         page_alloc(&ppc);
-        bcopy(page2kva(ppp), page2kva(ppc), BY2PG);
+        bcopy((void *)page2kva(ppp), (void *)page2kva(ppc), BY2PG);
         page_insert(e->env_pgdir, ppc, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     }
     e->env_status = ENV_NOT_RUNNABLE;
@@ -175,7 +175,6 @@ int sys_set_env_status(int sysno, u_int envid, u_int status) {
 
 int sys_set_trapframe(int sysno, u_int envid, struct Trapframe *tf) {
     panic("sys_set_trapframe not implemented!");
-    return 0;
 }
 
 void sys_panic(int sysno, char *msg) {

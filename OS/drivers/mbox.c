@@ -30,9 +30,9 @@ extern u64  get_ptr(u64);
 #define MBOX_FULL		0x80000000
 #define	MBOX_EMPTY		0x40000000
 
-static u32 mbox_base = MBOX_BASE;
+static u64 mbox_base = MBOX_BASE;
 
-void mbox_set_base(u32 base)
+void mbox_set_base(u64 base)
 {
 	mbox_base = base;
 }

@@ -18,11 +18,9 @@ CFLAGS += -nostdlib -static
 
 all: fktest.x fktest.b pingpong.x pingpong.b $(USERLIB) entry.o
 
-test: pi-test-a.c pi-test-b.c syscall_lib.o string.o print.o printf.o
-	$(CC) $(CFLAGS) $(INCLUDES) -c pi-test-a.c -o pi-test-a.o
-	$(LD) -o pi-test-a.b -e umain pi-test-a.o syscall_lib.o string.o print.o printf.o
-	$(CC) $(CFLAGS) $(INCLUDES) -c pi-test-b.c -o pi-test-b.o
-	$(LD) -o pi-test-b.b -e umain pi-test-b.o syscall_lib.o string.o print.o printf.o
+test: pitesta.o pitestb.o syscall_lib.o string.o print.o printf.o
+	$(LD) -o pitesta.elf -e umain pitesta.o syscall_lib.o string.o print.o printf.o
+	$(LD) -o pitestb.elf -e umain pitestb.o syscall_lib.o string.o print.o printf.o
 
 %.x: %.b.c
 	echo cc1 $<
