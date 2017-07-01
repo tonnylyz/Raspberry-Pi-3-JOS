@@ -5,36 +5,28 @@ USERLIB := printf.o \
 		libos.o \
 		fork.o \
 		pgfault.o \
+		syscall.o \
 		syscall_lib.o \
 		ipc.o \
 		string.o
 
 CROSS  := /home/tonny/linaro-elf/bin/aarch64-elf-
-CFLAGS := -Wall -ffreestanding
+CFLAGS := -Wall -ffreestanding -nostdlib -static
 CC     := $(CROSS)gcc
 LD     := $(CROSS)ld
 
-CFLAGS += -nostdlib -static
+all: lab3 lab4
 
-all: fktest.x fktest.b pingpong.x pingpong.b $(USERLIB) entry.o
+lab4: fktest.elf pingpong.elf $(USERLIB) entry.o
 
-test: pitesta.o pitestb.o syscall_lib.o string.o print.o printf.o
-	$(LD) -o pitesta.elf -e umain pitesta.o syscall_lib.o string.o print.o printf.o
-	$(LD) -o pitestb.elf -e umain pitestb.o syscall_lib.o string.o print.o printf.o
+lab3: pitesta.o pitestb.o pitestc.o syscall.o syscall_lib.o string.o print.o printf.o
+	$(LD) -o pitesta.elf -e umain pitesta.o syscall.o syscall_lib.o string.o print.o printf.o
+	$(LD) -o pitestb.elf -e umain pitestb.o syscall.o syscall_lib.o string.o print.o printf.o
+	$(LD) -o pitestc.elf -e umain pitestc.o syscall.o syscall_lib.o string.o print.o printf.o
 
-%.x: %.b.c
-	echo cc1 $<
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-%.b.c: %.b
-	echo create $@
-	echo bintoc $* $< > $@~
-	chmod +x ./bintoc
-	./bintoc $* $< > $@~ && mv -f $@~ $@
-	
-%.b: entry.o %.o $(USERLIB)
+%.elf: entry.o %.o $(USERLIB)
 	echo ld $@
-	$(LD) -o $@ $(LDFLAGS) -G 0 -static -n -nostdlib $^
+	$(LD) -o $@ -e _start -G 0 -static -n -nostdlib $^
 
 %.o: %.c
 	echo user1 cc $<
@@ -49,5 +41,5 @@ test: pitesta.o pitestb.o syscall_lib.o string.o print.o printf.o
 .PHONY: clean
 
 clean:
-	rm -rf *~ *.o *.b.c *.x *.b
+	rm -rf *~ *.o *.b.c *.x *.b *.elf
 

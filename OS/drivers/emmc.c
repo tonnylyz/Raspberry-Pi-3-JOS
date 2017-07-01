@@ -206,7 +206,6 @@ static u32 sd_get_base_clock_hz()
     capabilities_0 = mmio_read(emmc_base + EMMC_CAPABILITIES_0);
     base_clock = ((capabilities_0 >> 8) & 0xff) * 1000000;
 #elif SDHCI_IMPLEMENTATION == SDHCI_IMPLEMENTATION_BCM_2708
-    // TODO: mail box should not use low address!
 	u32 mb_addr = (u32)&mbox_buf;
 	volatile u32 *mailbuffer = (u32 *)mbox_buf;
 
@@ -365,7 +364,6 @@ static int bcm_2708_power_cycle()
 // Set the clock dividers to generate a target value
 static u32 sd_get_clock_divider(u32 base_clock, u32 target_rate)
 {
-    // TODO: implement use of preset value registers
 
     u32 targetted_divisor = 0;
     if(target_rate > base_clock)

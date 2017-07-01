@@ -1,40 +1,9 @@
-// implement fork from user space
-
 #include "lib.h"
 
 #define PAGE_FAULT_TEMP (USTACKTOP - 2 * BY2PG)
 
-void user_bcopy(const void *src, void *dst, u_long len)
-{
-	void *max;
-	max = dst + len;
-	if (((int)src % 4 == 0) && ((int)dst % 4 == 0)) {
-		while (dst + 3 < max) {
-			*(int *)dst = *(int *)src;
-			dst += 4;
-			src += 4;
-		}
-	}
-	while (dst < max) {
-		*(char *)dst = *(char *)src;
-		dst += 1;
-		src += 1;
-	}
-}
 
-void user_bzero(void *v, u_long n)
-{
-	char *p;
-	int m;
-	p = v;
-	m = n;
-	while (--m >= 0) {
-		*p++ = 0;
-	}
-}
-
-static void pgfault(u_int va)
-{/*
+static void pgfault(u_int va) {/*
     int r;
     va = ROUNDDOWN(va, BY2PG);
 
@@ -63,8 +32,7 @@ static void pgfault(u_int va)
     }*/
 }
 
-static void duppage(u_int envid, u_int pn)
-{/*
+static void duppage(u_int envid, u_int pn) {/*
 	int r;
     u_int addr = pn * BY2PG;
     u_int perm = ((*vpt)[pn]) & 0xfff;
@@ -95,11 +63,10 @@ static void duppage(u_int envid, u_int pn)
 
 extern void __asm_pgfault_handler(void);
 
-int fork(void)
-{
-	u_int envid;
-	extern struct Env *envs;
-	extern struct Env *env;
+int fork(void) {
+    u_int envid;
+    extern struct Env *envs;
+    extern struct Env *env;
     int ret;
 
     set_pgfault_handler(pgfault);
@@ -118,7 +85,7 @@ int fork(void)
         if (((*vpd)[pn / PTE2PT]) != 0 && ((*vpt)[pn]) != 0) {
             duppage(envid, pn);
         }
-    }*/
+    }
 
     ret = syscall_mem_alloc(envid, UXSTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     if (ret < 0) {
@@ -129,11 +96,11 @@ int fork(void)
     if (ret < 0) {
         user_panic("[ERR] fork %d : syscall_set_pgfault_handler failed", envid);
     }
-
+    */
     ret = syscall_set_env_status(envid, ENV_RUNNABLE);
     if (ret < 0) {
         user_panic("[ERR] fork %d : syscall_set_env_status failed", envid);
     }
 
-	return envid;
+    return envid;
 }

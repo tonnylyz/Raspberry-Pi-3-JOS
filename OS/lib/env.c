@@ -55,6 +55,14 @@ static int env_setup_vm(struct Env *e) {
     }
     p->pp_ref++;
     e->env_pgdir = (Pde *) page2pa(p);
+
+    // TODO:
+    // map PAGES (struct Page *pages) here UPAGES
+    // map ENVS (struct Env *envs) here UENVS
+
+    // TODO:
+    // Self-map VIRTUAL PAGE TABLE(vpt) UVPT
+
     return 0;
 }
 
@@ -149,9 +157,6 @@ void env_destroy(struct Env *e) {
     env_free(e);
     if (curenv == e) {
         curenv = NULL;
-        /*bcopy((void *)KERNEL_SP - sizeof(struct Trapframe),
-              (void *)TIMESTACK - sizeof(struct Trapframe),
-              sizeof(struct Trapframe));*/
         sched_yield();
     }
 }

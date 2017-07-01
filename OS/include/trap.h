@@ -14,6 +14,4 @@ struct Trapframe
     u_long regs[31];
 };
 
-void trap_init();
-
 #endif

@@ -29,6 +29,7 @@
 #define KERNEL_PAGES (0xFFFFFF0000000000uL + 0x01400000uL)
 #define KERNEL_ENVS  (0xFFFFFF0000000000uL + 0x01700000uL)
 
+#define UTOP         (0xffffffff)
 #define USTACKTOP    (0x80000000)
 
 #define PTE_V                     (0x3 << 0)    // Table Entry Valid bit

@@ -150,10 +150,36 @@ el1_sync_pgfault:
     ldr x30, [sp], #8
     b el1_sync_end
 
+.macro syscall_entry function id iss
+    cmp \iss, \id
+    b.ne 1f
+    bl \function
+    b el1_sync_syscall_end
+1:
+.endm
+
 el1_sync_syscall:
     mrs x20, sp_el0
     mov sp, x20
-    bl sys_putchar
+    mrs x20, esr_el1
+    bic x20, x20, #0xFE000000
+    syscall_entry sys_putchar, #0, x20
+    syscall_entry sys_getenvid, #1, x20
+    syscall_entry sys_yield, #2, x20
+    syscall_entry sys_env_destroy, #3, x20
+    syscall_entry sys_set_pgfault_handler, #4, x20
+    syscall_entry sys_mem_alloc, #5, x20
+    syscall_entry sys_mem_map, #6, x20
+    syscall_entry sys_mem_unmap, #7, x20
+    syscall_entry sys_env_alloc, #8, x20
+    syscall_entry sys_set_env_status, #9, x20
+    syscall_entry sys_set_trapframe, #10, x20
+    syscall_entry sys_panic, #11, x20
+    syscall_entry sys_ipc_can_send, #12, x20
+    syscall_entry sys_ipc_recv, #13, x20
+    syscall_entry sys_cgetc, #14, x20
+el1_sync_syscall_end:
+    bl sys_set_return
     b el1_sync_end
 
 el1_fiq:

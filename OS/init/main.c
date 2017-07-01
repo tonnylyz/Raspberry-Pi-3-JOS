@@ -31,11 +31,11 @@ u64 get_far() {
     return r;
 }
 
-u_char program[75264]; // 512 * 147
+u_char program[76800]; // 512 * 147
 void load_program(u_int sector) {
     int i;
     u_int pos = 0;
-    for (i = 0; i < 147; i++)
+    for (i = 0; i < 150; i++)
     {
         u_char buf[512];
         emmc_read_sector(sector + i, buf);
@@ -63,13 +63,12 @@ void main() {
 
     // trap_init: trap was initialized implicitly in `utility.S`
 
-    // Load elf image into sd card first
-    // dd if=pitesta.elf of=/dev/sdx seek=1024 bs=512
+    // Load elf image from sd card first
+    // dd if=[elf image] of=/dev/sd[x] seek=1024 bs=512
     load_program(1024);
     env_create(program, 75000);
-    // dd if=pitestb.elf of=/dev/sdx seek=2048 bs=512
-    load_program(2048);
-    env_create(program, 75000);
+    load_program(2400);
+    env_create(program, 76056);
 
     kclock_init();
     printf("kclock_init done.\n");

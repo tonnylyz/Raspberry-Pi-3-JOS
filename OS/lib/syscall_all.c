@@ -7,36 +7,39 @@
 
 extern struct Env *curenv;
 
-void sys_putchar(int sysno, int c, int a2, int a3, int a4, int a5) {
-    printcharc((char) c);
+void sys_set_return(long r) {
+    struct Trapframe *tf = (struct Trapframe *)(TIMESTACKTOP - sizeof(struct Trapframe));
+    tf->regs[0] = r;
+}
+
+void sys_putchar(int sysno, char c) {
+    printcharc(c);
     return;
 }
 
-u_int sys_getenvid(void) {
+u_long sys_getenvid() {
     return curenv->env_id;
 }
 
-void sys_yield(void) {
+void sys_yield() {
     bcopy((void *)(KSTACKTOP - sizeof(struct Trapframe)),
           (void *)(TIMESTACKTOP - sizeof(struct Trapframe)),
           sizeof(struct Trapframe));
-
+    // TODO: ???
     sched_yield();
 }
 
 int sys_env_destroy(int sysno, u_int envid) {
     int r;
     struct Env *e;
-
     if ((r = envid2env(envid, &e, 1)) < 0) {
         return r;
     }
-
     env_destroy(e);
     return 0;
 }
 
-int sys_set_pgfault_handler(int sysno, u_int envid, u_int func, u_int xstacktop) {
+int sys_set_pgfault_handler(int sysno, u_int envid, u_long func, u_long xstacktop) {
     struct Env *env;
     int ret;
     ret = envid2env(envid, &env, 0);
@@ -47,86 +50,65 @@ int sys_set_pgfault_handler(int sysno, u_int envid, u_int func, u_int xstacktop)
     return 0;
 }
 
-int sys_mem_alloc(int sysno, u_int envid, u_int va, u_int perm) {
+int sys_mem_alloc(int sysno, u_int envid, u_long va, u_long perm) {
     struct Env *env;
     struct Page *ppage;
     int ret;
-    /*
-    if (perm & PTE_V == 0 || perm & PTE_COW != 0) {
-        printf("[ERR] perm\n");
-        return -E_INVAL;
-    }
-    if (va >= UTOP) {
-        printf("[ERR] va\n");
+    if (va > UTOP) {
+        printf("[ERR] sys_mem_alloc va\n");
         return -1;
-    }*/
-    // Get env
+    }
     ret = envid2env(envid, &env, 0);
     if (ret < 0) {
-        printf("[ERR] envid2env\n");
+        printf("[ERR] sys_mem_alloc envid2env\n");
         return ret;
     }
-    // Allocate page
     ret = page_alloc(&ppage);
     if (ret < 0) {
-        printf("[ERR] page_alloc\n");
+        printf("[ERR] sys_mem_alloc page_alloc\n");
         return ret;
     }
-    // Clean page
     bzero((void *)page2kva(ppage), BY2PG);
-    // Insert page to env
-    ret = page_insert(env->env_pgdir, ppage, va, perm | ATTRIB_AP_RW_ALL);
+    ret = page_insert(env->env_pgdir, ppage, va, perm | PTE_V | ATTRIB_AP_RW_ALL);
     if (ret < 0) {
-        printf("[ERR] page_insert\n");
+        printf("[ERR] sys_mem_alloc page_insert\n");
         return ret;
     }
     return 0;
 }
 
-int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva, u_int perm) {
+int sys_mem_map(int sysno, u_int srcid, u_long srcva, u_int dstid, u_long dstva, u_long perm) {
     int ret;
-    u_int round_srcva, round_dstva;
     struct Env *srcenv;
     struct Env *dstenv;
     struct Page *ppage;
     Pte *ppte;
-
-    ppage = NULL;
-    ret = 0;
-    round_srcva = ROUNDDOWN(srcva, BY2PG);
-    round_dstva = ROUNDDOWN(dstva, BY2PG);
-    // va restriction
-    if (srcva != round_srcva || dstva != round_dstva) {
-        printf("[ERR] va\n");
-        return -1;
-    }
-    // Get env
+    srcva = ROUNDDOWN(srcva, BY2PG);
+    dstva = ROUNDDOWN(dstva, BY2PG);
     ret = envid2env(srcid, &srcenv, 1);
     if (ret < 0) {
-        printf("[ERR] envid2env\n");
+        printf("[ERR] sys_mem_map envid2env\n");
         return ret;
     }
     ret = envid2env(dstid, &dstenv, 1);
     if (ret < 0) {
-        printf("[ERR] envid2env\n");
+        printf("[ERR] sys_mem_map envid2env\n");
         return ret;
     }
-    // Lookup the page in the source env
     ppage = page_lookup(srcenv->env_pgdir, srcva, &ppte);
     if (ppage == NULL) {
-        printf("[ERR] sys_mem_map : page_lookup : [%8x] : [%8x] : [%8x]\n", srcenv->env_pgdir, srcva, &ppte);
+        printf("[ERR] sys_mem_map : page_lookup : [%l016x] : [%l016x] : [%l016x]\n", srcenv->env_pgdir, srcva, &ppte);
         return -1;
     }
-    // Insert the page to the destination env
     ret = page_insert(dstenv->env_pgdir, ppage, dstva, perm);
     if (ret < 0) {
-        printf("[ERR] page_insert\n");
+        printf("[ERR] sys_mem_map page_insert\n");
         return ret;
     }
     return 0;
 }
 
-int sys_mem_unmap(int sysno, u_int envid, u_int va) {
+int sys_mem_unmap(int sysno, u_int envid, u_long va) {
     int ret;
     struct Env *env;
     ret = envid2env(envid, &env, 1);
@@ -138,15 +120,16 @@ int sys_mem_unmap(int sysno, u_int envid, u_int va) {
     return ret;
 }
 
-int sys_env_alloc(void) {
+int sys_env_alloc() {
     int r;
     struct Env *e;
+    Pte *ppte;
     r = env_alloc(&e, curenv->env_id);
     if (r < 0) {
+        printf("[ERR] sys_env_alloc : env_alloc\n");
         return r;
     }
-    bcopy((void *)(KSTACKTOP - sizeof(struct Trapframe)), &e->env_tf, sizeof(struct Trapframe));
-    Pte *ppte = NULL;
+    bcopy((void *)(TIMESTACKTOP - sizeof(struct Trapframe)), &e->env_tf, sizeof(struct Trapframe));
     pgdir_walk(curenv->env_pgdir, USTACKTOP - BY2PG, 0, &ppte);
     if (ppte != NULL) {
         struct Page *ppc, *ppp;
@@ -156,7 +139,7 @@ int sys_env_alloc(void) {
         page_insert(e->env_pgdir, ppc, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
     }
     e->env_status = ENV_NOT_RUNNABLE;
-    //e->env_tf.regs[2] = 0;
+    e->env_tf.regs[0] = 0;
     return e->env_id;
 }
 
@@ -205,3 +188,6 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva, u_int per
     return 0;
 }
 
+int sys_cgetc() {
+    return uart_recv();
+}
