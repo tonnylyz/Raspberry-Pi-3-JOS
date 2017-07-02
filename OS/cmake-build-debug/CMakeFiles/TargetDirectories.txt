@@ -1,3 +1,0 @@
-/home/tonny/rpi-1/OS/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/tonny/rpi-1/OS/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/tonny/rpi-1/OS/cmake-build-debug/CMakeFiles/nouse.dir

@@ -29,6 +29,11 @@
 #define KERNEL_PAGES (0xFFFFFF0000000000uL + 0x01400000uL)
 #define KERNEL_ENVS  (0xFFFFFF0000000000uL + 0x01700000uL)
 
+
+#define UVPT         (0x0000008000000000)
+#define UENVS        (0x0000008100000000)
+#define UPAGES       (0x0000008200000000)
+
 #define UTOP         (0xffffffff)
 #define USTACKTOP    (0x80000000)
 
@@ -50,7 +55,7 @@
 #define ATTRINDX_COHERENT         (2 << 2) // Device-nGnRnE
 
 
-#define NPAGE       0x40000
+#define NPAGE       0x20000
 #define MAXPA       0x20000000
 
 

@@ -1,10 +1,10 @@
 .data
 .global envs
 envs:
-	.word 0 // UENVS
+	.word 0x0000008100000000 // UENVS
 .globl pages
 pages:
-    .word 0 // UPAGES
+    .word 0x0000008200000000 // UPAGES
 .global vpt
 vpt:
 	.word 0 // UVPT

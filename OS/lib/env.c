@@ -56,13 +56,9 @@ static int env_setup_vm(struct Env *e) {
     p->pp_ref++;
     e->env_pgdir = (Pde *) page2pa(p);
 
-    // TODO:
-    // map PAGES (struct Page *pages) here UPAGES
-    // map ENVS (struct Env *envs) here UENVS
-
-    // TODO:
-    // Self-map VIRTUAL PAGE TABLE(vpt) UVPT
-
+    map_segment(KADDR(e->env_pgdir), UPAGES, ROUND(NPAGE * sizeof(struct Page), BY2PG), 0x01400000, ATTRIB_AP_RO_ALL);
+    map_segment(KADDR(e->env_pgdir), UENVS,  ROUND(NENV  * sizeof(struct Env) , BY2PG), 0x01700000, ATTRIB_AP_RO_ALL);
+    // TODO: Self-map VIRTUAL PAGE TABLE(vpt) UVPT
     return 0;
 }
 

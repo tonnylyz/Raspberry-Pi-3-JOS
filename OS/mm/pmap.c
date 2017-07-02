@@ -173,3 +173,13 @@ void page_remove(Pde *pgdir, u_long va) {
     *pagetable_entry = 0;
     tlb_invalidate();
 }
+
+
+void map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm) {
+    Pte *pte;
+    int i;
+    for (i = 0; i < size; i += BY2PG) {
+        pgdir_walk(pgdir, va + i, 1, &pte);
+        *pte = PTE_ADDR(pa + i) | perm | PTE_V;
+    }
+}

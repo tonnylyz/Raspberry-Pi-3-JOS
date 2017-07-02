@@ -1,1 +1,3 @@
 *.o
+OS/cmake-build-debug/*
+OS/.idea/*

@@ -22,10 +22,6 @@ u_long sys_getenvid() {
 }
 
 void sys_yield() {
-    bcopy((void *)(KSTACKTOP - sizeof(struct Trapframe)),
-          (void *)(TIMESTACKTOP - sizeof(struct Trapframe)),
-          sizeof(struct Trapframe));
-    // TODO: ???
     sched_yield();
 }
 
