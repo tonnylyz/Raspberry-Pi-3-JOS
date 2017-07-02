@@ -61,3 +61,7 @@ void syscall_ipc_recv(u_long dstva) {
 long syscall_cgetc() {
     return (long)msyscall(14, 0, 0, 0, 0, 0);
 }
+
+u_long syscall_pgtable_entry(u_long va) {
+    return (long)msyscall(15, va, 0, 0, 0, 0);
+}

@@ -2,7 +2,6 @@
 
 #define PAGE_FAULT_TEMP (USTACKTOP - 2 * BY2PG)
 
-
 static void pgfault(u_int va) {/*
     int r;
     va = ROUNDDOWN(va, BY2PG);
@@ -32,33 +31,32 @@ static void pgfault(u_int va) {/*
     }*/
 }
 
-static void duppage(u_int envid, u_int pn) {/*
+static void duppage(u_int envid, u_long addr, u_long pte) {
 	int r;
-    u_int addr = pn * BY2PG;
-    u_int perm = ((*vpt)[pn]) & 0xfff;
-
-    if (perm & ATTRIB_AP_RW_ALL) {
-        writef("[LOG] duppage : PTE_LIBRARY\n");
+    u_int perm = pte & 0xfff;
+    if (perm & ATTRIB_SH_OUTER_SHAREABLE) {
+        writef("[LOG] duppage : ATTRIB_SH_OUTER_SHAREABLE\n");
         r = syscall_mem_map(0, addr, envid, addr, perm & ATTRIB_AP_RW_ALL);
         if (r < 0) {
             writef("[ERR] duppage : syscall_mem_map #-1\n");
         }
-    } else if ((perm & PTE_R) != 0 || (perm & ATTRIB_AP_RW_ALL) != 0) {
-        r = syscall_mem_map(0, addr, envid, addr, PTE_V | ATTRIB_AP_RW_ALL);
+    } else if ((perm & ATTRIB_AP_RW_ALL) != 0 || (perm & ATTRIB_AP_RO_ALL) != 0) {
+        r = syscall_mem_map(0, addr, envid, addr, ATTRIB_AP_RO_ALL);
         if (r < 0) {
             writef("[ERR] duppage : syscall_mem_map #0\n");
         }
-        r = syscall_mem_map(0, addr, 0,     addr, PTE_V | ATTRIB_AP_RW_ALL);
+        r = syscall_mem_map(0, addr, 0,     addr, ATTRIB_AP_RO_ALL);
         if (r < 0) {
             writef("[ERR] duppage : syscall_mem_map #1\n");
         }
     } else {
         r = syscall_mem_map(0, addr, envid, addr, PTE_V);
+        writef("[LOG] duppage : READONLY\n");
         if (r < 0) {
             writef("[ERR] duppage : syscall_mem_map #3\n");
         }
     }
-    */
+
 }
 
 extern void __asm_pgfault_handler(void);
@@ -80,10 +78,11 @@ int fork(void) {
         return 0;
     }
 
-    /*int pn;
-    for (pn = 0; pn < (USTACKTOP / BY2PG) - 2; pn++) {
-        if (((*vpd)[pn / PTE2PT]) != 0 && ((*vpt)[pn]) != 0) {
-            duppage(envid, pn);
+    u_long va;
+    for (va = 0; va < USTACKTOP - BY2PG; va += BY2PG) {
+        u_long pte = syscall_pgtable_entry(va);
+        if (pte != 0) {
+            duppage(envid, va, pte);
         }
     }
 
@@ -96,7 +95,7 @@ int fork(void) {
     if (ret < 0) {
         user_panic("[ERR] fork %d : syscall_set_pgfault_handler failed", envid);
     }
-    */
+
     ret = syscall_set_env_status(envid, ENV_RUNNABLE);
     if (ret < 0) {
         user_panic("[ERR] fork %d : syscall_set_env_status failed", envid);

@@ -36,6 +36,7 @@
 
 #define UTOP         (0xffffffff)
 #define USTACKTOP    (0x80000000)
+#define UXSTACKTOP   (0x90000000)
 
 #define PTE_V                     (0x3 << 0)    // Table Entry Valid bit
 #define PBE_V                     (0x1 << 0)    // Block Entry Valid bit

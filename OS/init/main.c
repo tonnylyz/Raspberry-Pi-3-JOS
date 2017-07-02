@@ -91,9 +91,17 @@ void handle_int() {
     setup_clock_int(0);
 }
 
+extern void user_pgfault_handler(u64 function, u64 xstacktop, u64 ret);
+
 void handle_pgfault() {
     printf("\n[System Exception]\n");
     printf("Page fault : va : [%l016x]\n", get_far());
+
+    if (curenv && curenv->env_pgfault_handler != 0) {
+        struct Trapframe *tf = (struct Trapframe *)(TIMESTACKTOP - sizeof(struct Trapframe));
+        user_pgfault_handler(curenv->env_pgfault_handler, curenv->env_xstacktop, tf->elr);
+    }
+
     while (1) {
         empty_loop(0);
     }

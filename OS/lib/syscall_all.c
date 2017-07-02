@@ -126,7 +126,7 @@ int sys_env_alloc() {
         return r;
     }
     bcopy((void *)(TIMESTACKTOP - sizeof(struct Trapframe)), &e->env_tf, sizeof(struct Trapframe));
-    pgdir_walk(curenv->env_pgdir, USTACKTOP - BY2PG, 0, &ppte);
+    pgdir_walk(KADDR(curenv->env_pgdir), USTACKTOP - BY2PG, 0, &ppte);
     if (ppte != NULL) {
         struct Page *ppc, *ppp;
         ppp = pa2page(PTE_ADDR(*ppte));
@@ -160,14 +160,14 @@ void sys_panic(int sysno, char *msg) {
     panic("%s", msg);
 }
 
-void sys_ipc_recv(int sysno, u_int dstva) {
+void sys_ipc_recv(int sysno, u_long dstva) {
     curenv->env_ipc_dstva = dstva;
     curenv->env_ipc_recving = 1;
     curenv->env_status = ENV_NOT_RUNNABLE;
     sys_yield();
 }
 
-int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva, u_int perm) {
+int sys_ipc_can_send(int sysno, u_int envid, u_long value, u_long srcva, u_long perm) {
     int r;
     struct Env *e;
     r = envid2env(envid, &e, 0);
@@ -186,4 +186,13 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva, u_int per
 
 int sys_cgetc() {
     return uart_recv();
+}
+
+u_long sys_pgtable_entry(int sysno, u_long va) {
+    Pte *pte;
+    pgdir_walk(KADDR(curenv->env_pgdir), va, 0, &pte);
+    if (pte == NULL) {
+        return 0;
+    }
+    return *pte;
 }

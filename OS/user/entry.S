@@ -15,7 +15,7 @@ vpd:
 
 .global __pgfault_handler
 __pgfault_handler:
-	.word 0 // SET LATER
+	.word 0
 
 
 .extern libmain
