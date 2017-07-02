@@ -179,6 +179,7 @@ el1_sync_syscall:
     syscall_entry sys_ipc_recv, #13, x20
     syscall_entry sys_cgetc, #14, x20
     syscall_entry sys_pgtable_entry, #15, x20
+    syscall_entry sys_fork, #16, x20
 el1_sync_syscall_end:
     bl sys_set_return
     b el1_sync_end
@@ -201,4 +202,4 @@ el1_irq:
 // void user_pgfault_handler(u64 function, u64 xstacktop, u64 return)
 .global user_pgfault_handler
 user_pgfault_handler:
-    mov
+    nop

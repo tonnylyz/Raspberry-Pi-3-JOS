@@ -65,3 +65,7 @@ long syscall_cgetc() {
 u_long syscall_pgtable_entry(u_long va) {
     return (long)msyscall(15, va, 0, 0, 0, 0);
 }
+
+u_int syscall_fork() {
+    return (long)msyscall(16, 0, 0, 0, 0, 0);
+}

@@ -55,14 +55,11 @@ static int env_setup_vm(struct Env *e) {
     }
     p->pp_ref++;
     e->env_pgdir = (Pde *) page2pa(p);
-
-    map_segment(KADDR(e->env_pgdir), UPAGES, ROUND(NPAGE * sizeof(struct Page), BY2PG), 0x01400000, ATTRIB_AP_RO_ALL);
-    map_segment(KADDR(e->env_pgdir), UENVS,  ROUND(NENV  * sizeof(struct Env) , BY2PG), 0x01700000, ATTRIB_AP_RO_ALL);
-    // TODO: Self-map VIRTUAL PAGE TABLE(vpt) UVPT
+    printf("env_setup_vm done.\n");
     return 0;
 }
 
-int env_alloc(struct Env **new, u_int parent_id) {
+int env_alloc(struct Env **newenv, u_int parent_id) {
     int r;
     struct Env *e;
     e = LIST_FIRST(&env_free_list);
@@ -81,7 +78,7 @@ int env_alloc(struct Env **new, u_int parent_id) {
     e->env_tf.sp = USTACKTOP;
 
     LIST_REMOVE(e, env_link);
-    *new = e;
+    *newenv = e;
     return 0;
 }
 

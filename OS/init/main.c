@@ -31,11 +31,11 @@ u64 get_far() {
     return r;
 }
 
-u_char program[76800]; // 512 * 147
+u_char program[102400]; // 512 * 200
 void load_program(u_int sector) {
     int i;
     u_int pos = 0;
-    for (i = 0; i < 150; i++)
+    for (i = 0; i < 200; i++)
     {
         u_char buf[512];
         emmc_read_sector(sector + i, buf);
@@ -65,7 +65,14 @@ void main() {
 
     // Load elf image from sd card first
     // dd if=[elf image] of=/dev/sd[x] seek=1024 bs=512
+    // sec  name    size
+    // 1024 pitesta 75000
+    // 2048 pitestb 75000
+    // 2400 pitestc 76056
+    // 3000 fktest  79048
     load_program(1024);
+    env_create(program, 75000);
+    load_program(2048);
     env_create(program, 75000);
     load_program(2400);
     env_create(program, 76056);
@@ -96,6 +103,7 @@ extern void user_pgfault_handler(u64 function, u64 xstacktop, u64 ret);
 void handle_pgfault() {
     printf("\n[System Exception]\n");
     printf("Page fault : va : [%l016x]\n", get_far());
+
 
     if (curenv && curenv->env_pgfault_handler != 0) {
         struct Trapframe *tf = (struct Trapframe *)(TIMESTACKTOP - sizeof(struct Trapframe));

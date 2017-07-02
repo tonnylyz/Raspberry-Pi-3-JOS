@@ -27,12 +27,7 @@
 #define KERNBASE     (0xFFFFFF0000000000uL + 0x00080000uL)
 #define KERNEL_PGDIR (0xFFFFFF0000000000uL + 0x01000000uL)
 #define KERNEL_PAGES (0xFFFFFF0000000000uL + 0x01400000uL)
-#define KERNEL_ENVS  (0xFFFFFF0000000000uL + 0x01700000uL)
-
-
-#define UVPT         (0x0000008000000000)
-#define UENVS        (0x0000008100000000)
-#define UPAGES       (0x0000008200000000)
+#define KERNEL_ENVS  (0xFFFFFF0001700000uL + 0x01700000uL)
 
 #define UTOP         (0xffffffff)
 #define USTACKTOP    (0x80000000)
@@ -60,7 +55,7 @@
 #define MAXPA       0x20000000
 
 
-#define KADDR(pa) ((u_long)(pa) + 0xFFFFFF0000000000uL)
+#define KADDR(pa) ((u_long)(pa) | 0xFFFFFF0000000000uL)
 
 typedef u_long Pge;
 typedef u_long Pde;

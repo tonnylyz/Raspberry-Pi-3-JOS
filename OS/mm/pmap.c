@@ -69,8 +69,16 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte) {
     u_long *pde;
     u_long *pme;
     u_long *pte;
+/*
+    printf("PGX(va) [%l016x]\n", PGX(va));
+    printf("PDX(va) [%l016x]\n", PDX(va));
+    printf("PMX(va) [%l016x]\n", PMX(va));
+    printf("PTX(va) [%l016x]\n", PTX(va));
 
+*/
     pge = (u_long *)KADDR(&pgdir[PGX(va)]);
+    //printf("pge [%l016x]\n", pge);
+    //printf("*pge [%l016x]\n", *pge);
     pde = (u_long *)KADDR(PTE_ADDR(*pge)) + PDX(va);
     if (!(*pge & PTE_V)) {
         if (!create) {

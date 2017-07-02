@@ -4,7 +4,6 @@ USERLIB := printf.o \
 		print.o \
 		libos.o \
 		fork.o \
-		pgfault.o \
 		syscall.o \
 		syscall_lib.o \
 		ipc.o \

@@ -37,9 +37,7 @@ __attribute__((noreturn));
 /////////////////////////////////////////////////////////////
 //                          Fork                           //
 /////////////////////////////////////////////////////////////
-int fork(void);
-
-void set_pgfault_handler(void (*fn)(u_int va));
+int fork();
 
 /////////////////////////////////////////////////////////////
 //                       Syscall                           //
@@ -75,6 +73,8 @@ void syscall_ipc_recv(u_long dstva);
 long syscall_cgetc();
 
 u_long syscall_pgtable_entry(u_long va);
+
+u_int syscall_fork();
 
 /////////////////////////////////////////////////////////////
 //                         String                          //

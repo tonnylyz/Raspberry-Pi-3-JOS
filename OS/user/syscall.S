@@ -33,6 +33,8 @@ msyscall:
     b.eq svc14
     cmp x0, #15
     b.eq svc15
+    cmp x0, #16
+    b.eq svc16
 
 .macro callsvc svcno
     svc \svcno
@@ -55,3 +57,4 @@ svc12: callsvc #12
 svc13: callsvc #13
 svc14: callsvc #14
 svc15: callsvc #15
+svc15: callsvc #16

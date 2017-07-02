@@ -191,8 +191,20 @@ int sys_cgetc() {
 u_long sys_pgtable_entry(int sysno, u_long va) {
     Pte *pte;
     pgdir_walk(KADDR(curenv->env_pgdir), va, 0, &pte);
-    if (pte == NULL) {
+    if (pte == NULL || *pte & PTE_V == 0) {
         return 0;
     }
     return *pte;
+}
+
+u_int sys_fork() {
+    struct Env *e;
+    u_int envid;
+    envid = sys_env_alloc();
+
+    envid2env(envid, &e, 0);
+
+    curenv->env_pgdir = 0;
+
+    return envid;
 }
