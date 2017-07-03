@@ -14,7 +14,6 @@ void sys_set_return(long r) {
 
 void sys_putchar(int sysno, char c) {
     printcharc(c);
-    return;
 }
 
 u_long sys_getenvid() {
@@ -119,23 +118,15 @@ int sys_mem_unmap(int sysno, u_int envid, u_long va) {
 int sys_env_alloc() {
     int r;
     struct Env *e;
-    Pte *ppte;
     r = env_alloc(&e, curenv->env_id);
     if (r < 0) {
         printf("[ERR] sys_env_alloc : env_alloc\n");
         return r;
     }
     bcopy((void *)(TIMESTACKTOP - sizeof(struct Trapframe)), &e->env_tf, sizeof(struct Trapframe));
-    pgdir_walk(KADDR(curenv->env_pgdir), USTACKTOP - BY2PG, 0, &ppte);
-    if (ppte != NULL) {
-        struct Page *ppc, *ppp;
-        ppp = pa2page(PTE_ADDR(*ppte));
-        page_alloc(&ppc);
-        bcopy((void *)page2kva(ppp), (void *)page2kva(ppc), BY2PG);
-        page_insert(e->env_pgdir, ppc, USTACKTOP - BY2PG, ATTRIB_AP_RW_ALL);
-    }
     e->env_status = ENV_NOT_RUNNABLE;
     e->env_tf.regs[0] = 0;
+    e->env_ipc_recving = 0;
     return e->env_id;
 }
 
@@ -172,11 +163,13 @@ int sys_ipc_can_send(int sysno, u_int envid, u_long value, u_long srcva, u_long 
     struct Env *e;
     r = envid2env(envid, &e, 0);
     if (r < 0) {
+        printf("[ERR] sys_ipc_can_send E_BAD_ENV\n");
         return -E_BAD_ENV;
     }
     if (!e->env_ipc_recving) {
         return -E_IPC_NOT_RECV;
     }
+
     e->env_ipc_recving = 0;
     e->env_ipc_from = curenv->env_id;
     e->env_ipc_value = value;
@@ -190,8 +183,9 @@ int sys_cgetc() {
 
 u_long sys_pgtable_entry(int sysno, u_long va) {
     Pte *pte;
-    pgdir_walk(KADDR(curenv->env_pgdir), va, 0, &pte);
-    if (pte == NULL || *pte & PTE_V == 0) {
+    struct Page *page;
+    page = page_lookup((u_long *)KADDR(curenv->env_pgdir), va, &pte);
+    if (page == NULL) {
         return 0;
     }
     return *pte;
@@ -200,11 +194,21 @@ u_long sys_pgtable_entry(int sysno, u_long va) {
 u_int sys_fork() {
     struct Env *e;
     u_int envid;
+    u_long va;
+    u_long *pte;
+    struct Page *p;
+    struct Page *pp;
     envid = sys_env_alloc();
-
     envid2env(envid, &e, 0);
 
-    curenv->env_pgdir = 0;
-
+    for (va = 0; va < USTACKTOP; va += BY2PG) {
+        p = page_lookup((u_long *)KADDR(curenv->env_pgdir), va, &pte);
+        if (p == NULL)
+            continue;
+        page_alloc(&pp);
+        bcopy((void *)page2kva(p), (void *)page2kva(pp), BY2PG);
+        page_insert((u_long *)KADDR(e->env_pgdir), pp, va, ATTRIB_AP_RW_ALL);
+    }
+    e->env_status = ENV_RUNNABLE;
     return envid;
 }

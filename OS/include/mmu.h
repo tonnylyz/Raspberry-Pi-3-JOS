@@ -22,16 +22,19 @@
 #define PPN(va) (((u_long)(va)) >> 12)
 #define VPN(va) (((u_long)(va) & 0xFFFFFFFFFF) >> 12)
 
-#define TIMESTACKTOP (0xFFFFFF0000000000uL + 0x01751000uL)
-#define KSTACKTOP    (0xFFFFFF0000000000uL + 0x01000000uL)
-#define KERNBASE     (0xFFFFFF0000000000uL + 0x00080000uL)
-#define KERNEL_PGDIR (0xFFFFFF0000000000uL + 0x01000000uL)
-#define KERNEL_PAGES (0xFFFFFF0000000000uL + 0x01400000uL)
-#define KERNEL_ENVS  (0xFFFFFF0001700000uL + 0x01700000uL)
+#define KADDR(pa) ((u_long)(pa) | 0xFFFFFF0000000000uL)
+
+#define KTOP         KADDR(0x02000000)
+#define TIMESTACKTOP KADDR(0x01800000)
+#define KERNEL_ENVS  KADDR(0x01700000)
+#define KERNEL_PAGES KADDR(0x01400000)
+#define KERNEL_PGDIR KADDR(0x01000000)
+#define KSTACKTOP    KADDR(0x01000000)
+#define KERNBASE     KADDR(0x00080000)
 
 #define UTOP         (0xffffffff)
 #define USTACKTOP    (0x80000000)
-#define UXSTACKTOP   (0x90000000)
+#define UENVS        (0x90000000)
 
 #define PTE_V                     (0x3 << 0)    // Table Entry Valid bit
 #define PBE_V                     (0x1 << 0)    // Block Entry Valid bit
@@ -55,7 +58,6 @@
 #define MAXPA       0x20000000
 
 
-#define KADDR(pa) ((u_long)(pa) | 0xFFFFFF0000000000uL)
 
 typedef u_long Pge;
 typedef u_long Pde;

@@ -5,6 +5,7 @@
 #include <sched.h>
 #include <pmap.h>
 #include <printf.h>
+#include <drivers/include/timer.h>
 
 struct Env *envs = (struct Env *) KERNEL_ENVS;        // All environments
 struct Env *curenv;            // the current env
@@ -54,8 +55,13 @@ static int env_setup_vm(struct Env *e) {
         panic("env_setup_vm - page_alloc error\n");
     }
     p->pp_ref++;
-    e->env_pgdir = (Pde *) page2pa(p);
-    printf("env_setup_vm done.\n");
+    e->env_pgdir = (u_long *) page2pa(p);
+
+    u_long va;
+    for (va = UENVS; va < UENVS + ROUND(NENV * sizeof(struct Env), BY2PG); va += BY2PG) {
+        page_insert((u_long *)KADDR(e->env_pgdir), pa2page(0x01700000 + va - UENVS), va, ATTRIB_AP_RO_ALL);
+    }
+
     return 0;
 }
 
@@ -147,6 +153,7 @@ void env_free(struct Env *e) {
 }
 
 void env_destroy(struct Env *e) {
+    printf("env_destroy called\n");
     env_free(e);
     if (curenv == e) {
         curenv = NULL;
@@ -160,10 +167,11 @@ void env_run(struct Env *e) {
     struct Trapframe *old = (struct Trapframe *) (TIMESTACKTOP - sizeof(struct Trapframe));
     if (curenv) {
         bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
-        curenv->env_tf.elr = old->elr;
     }
     curenv = e;
     bcopy(&curenv->env_tf, old, sizeof(struct Trapframe));
     set_ttbr0((u_long) curenv->env_pgdir);
     tlb_invalidate();
+    usleep(2000); // wait for tlb flush?
+    //printf("env_run #%x run @[%l016x]\n", curenv->env_id, curenv->env_tf.elr);
 }

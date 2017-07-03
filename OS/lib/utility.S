@@ -40,14 +40,10 @@ tlb_invalidate:
 //                          Trap                           //
 /////////////////////////////////////////////////////////////
 
-// Time stack top    : 0xFFFFFF0001751000
-// Time stack bottom : 0xFFFFFF0001750ee8
-// See `Trapframe` struct in `trap.h`
-
 // Save current trapframe
 .macro push_time_stack
     str x0, [sp, #-16]!
-    ldr x0, =0xffffff0001751000
+    ldr x0, =0xFFFFFF0001800000
     stp x29, x30, [x0, #-16]!
     stp x27, x28, [x0, #-16]!
     stp x25, x26, [x0, #-16]!
@@ -76,7 +72,7 @@ tlb_invalidate:
 
 // Restore trapframe
 .macro pop_time_stack
-    ldr x30, =0xffffff0001750ee8
+    ldr x30, =0xFFFFFF00017FFEE8
     ldr x0, [x30], #8
     msr spsr_el1, x0
     ldp x0, x1, [x30], #16
@@ -143,7 +139,7 @@ el1_sync_end:
     eret
 
 el1_sync_pgfault:
-    ldr x19, =0xFFFFFF0001000000// kernel stack
+    ldr x19, =0xFFFFFF0001000000
     mov sp, x19
     str x30, [sp, #-8]!         // save x30 at first
     bl handle_pgfault
@@ -165,8 +161,6 @@ el1_sync_syscall:
     bic x20, x20, #0xFE000000
     syscall_entry sys_putchar, #0, x20
     syscall_entry sys_getenvid, #1, x20
-    syscall_entry sys_yield, #2, x20
-    syscall_entry sys_env_destroy, #3, x20
     syscall_entry sys_set_pgfault_handler, #4, x20
     syscall_entry sys_mem_alloc, #5, x20
     syscall_entry sys_mem_map, #6, x20
@@ -176,10 +170,14 @@ el1_sync_syscall:
     syscall_entry sys_set_trapframe, #10, x20
     syscall_entry sys_panic, #11, x20
     syscall_entry sys_ipc_can_send, #12, x20
-    syscall_entry sys_ipc_recv, #13, x20
     syscall_entry sys_cgetc, #14, x20
     syscall_entry sys_pgtable_entry, #15, x20
     syscall_entry sys_fork, #16, x20
+    ldr x19, =0xFFFFFF0001000000
+    mov sp, x19
+    syscall_entry sys_yield, #2, x20
+    syscall_entry sys_ipc_recv, #13, x20
+    syscall_entry sys_env_destroy, #3, x20
 el1_sync_syscall_end:
     bl sys_set_return
     b el1_sync_end
@@ -198,8 +196,3 @@ el1_irq:
     bl handle_int
     pop_time_stack
     eret
-
-// void user_pgfault_handler(u64 function, u64 xstacktop, u64 return)
-.global user_pgfault_handler
-user_pgfault_handler:
-    nop

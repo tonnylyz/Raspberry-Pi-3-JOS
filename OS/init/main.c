@@ -69,13 +69,13 @@ void main() {
     // 1024 pitesta 75000
     // 2048 pitestb 75000
     // 2400 pitestc 76056
-    // 3000 fktest  79048
-    load_program(1024);
-    env_create(program, 75000);
-    load_program(2048);
-    env_create(program, 75000);
-    load_program(2400);
-    env_create(program, 76056);
+    // 3000 fktest  77736
+    // 3500 pingpong 77904
+    load_program(3500);
+    env_create(program, 77904);
+
+    //load_program(3000);
+    //env_create(program, 77736);
 
     kclock_init();
     printf("kclock_init done.\n");
@@ -104,11 +104,8 @@ void handle_pgfault() {
     printf("\n[System Exception]\n");
     printf("Page fault : va : [%l016x]\n", get_far());
 
+    u_long va = get_far();
 
-    if (curenv && curenv->env_pgfault_handler != 0) {
-        struct Trapframe *tf = (struct Trapframe *)(TIMESTACKTOP - sizeof(struct Trapframe));
-        user_pgfault_handler(curenv->env_pgfault_handler, curenv->env_xstacktop, tf->elr);
-    }
 
     while (1) {
         empty_loop(0);
@@ -118,7 +115,7 @@ void handle_pgfault() {
 void handle_err() {
     printf("\n[System Exception]\n");
     printf("Kernel died\n");
-    printf("esr : [%08x]\n", get_esr());
+    printf("esr : [%32b]\n", (unsigned int)get_esr());
     printf("far : [%l016x]\n", get_far());
     while (1) {
         empty_loop(0);

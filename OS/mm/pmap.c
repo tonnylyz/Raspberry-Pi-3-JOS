@@ -1,10 +1,10 @@
 #include "pmap.h"
-struct Page *pages= (struct Page *)KERNEL_PAGES;
+struct Page *pages = (struct Page *)KERNEL_PAGES;
 static struct Page_list page_free_list;
 
 void page_init(void) {
     LIST_INIT(&page_free_list);
-    u_long freemem = ROUND(TIMESTACKTOP, BY2PG);
+    u_long freemem = ROUND(KTOP, BY2PG);
     u_int used_index = VPN(freemem);
     u_int i;
     for (i = 0; i < used_index; i++) {
@@ -45,6 +45,7 @@ int page_alloc(struct Page **pp) {
     struct Page *page;
     page = LIST_FIRST(&page_free_list);
     if (page == NULL) {
+        panic("page_alloc E_NO_MEM");
         return -E_NO_MEM;
     }
     LIST_REMOVE(page, pp_link);
@@ -69,63 +70,37 @@ int pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte) {
     u_long *pde;
     u_long *pme;
     u_long *pte;
-/*
-    printf("PGX(va) [%l016x]\n", PGX(va));
-    printf("PDX(va) [%l016x]\n", PDX(va));
-    printf("PMX(va) [%l016x]\n", PMX(va));
-    printf("PTX(va) [%l016x]\n", PTX(va));
-
-*/
     pge = (u_long *)KADDR(&pgdir[PGX(va)]);
-    //printf("pge [%l016x]\n", pge);
-    //printf("*pge [%l016x]\n", *pge);
-    pde = (u_long *)KADDR(PTE_ADDR(*pge)) + PDX(va);
     if (!(*pge & PTE_V)) {
         if (!create) {
-            ppte = NULL;
+            *ppte = NULL;
             return 0;
         }
-        if (page_alloc(&ppage) < 0) {
-            return -E_NO_MEM;
-        }
-        pde = (u_long *)page2pa(ppage);
-        *pge = (u_long)pde | PTE_V;
-        pde += PDX(va);
-        pde = (u_long *)KADDR(pde);
+        page_alloc(&ppage);
+        *pge = page2pa(ppage) | PTE_V;
         ppage->pp_ref = 1;
     }
-
-    pme = (u_long *)KADDR(PTE_ADDR(*pde)) + PMX(va);
+    pde = (u_long *)KADDR(PTE_ADDR(*pge)) + PDX(va);
     if (!(*pde & PTE_V)) {
         if (!create) {
-            ppte = NULL;
+            *ppte = NULL;
             return 0;
         }
-        if (page_alloc(&ppage) < 0) {
-            return -E_NO_MEM;
-        }
-        pme = (u_long *)page2pa(ppage);
-        *pde = (u_long)pme | PTE_V;
-        pme += PMX(va);
-        pme = (u_long *)KADDR(pme);
+        page_alloc(&ppage);
+        *pde = page2pa(ppage) | PTE_V;
         ppage->pp_ref = 1;
     }
-
-    pte = (u_long *)KADDR(PTE_ADDR(*pme)) + PTX(va);
+    pme = (u_long *)KADDR(PTE_ADDR(*pde)) + PMX(va);
     if (!(*pme & PTE_V)) {
         if (!create) {
-            ppte = NULL;
+            *ppte = NULL;
             return 0;
         }
-        if (page_alloc(&ppage) < 0) {
-            return -E_NO_MEM;
-        }
-        pte = (u_long *)page2pa(ppage);
-        *pme = (u_long)pte | PTE_V;
-        pte += PTX(va);
-        pte = (u_long *)KADDR(pte);
+        page_alloc(&ppage);
+        *pme = page2pa(ppage) | PTE_V;
         ppage->pp_ref = 1;
     }
+    pte = (u_long *)KADDR(PTE_ADDR(*pme)) + PTX(va);
     *ppte = pte;
     return 0;
 }

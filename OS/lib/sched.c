@@ -1,4 +1,5 @@
 #include <env.h>
+#include <printf.h>
 void sched_yield()
 {
     static int i = 0;
