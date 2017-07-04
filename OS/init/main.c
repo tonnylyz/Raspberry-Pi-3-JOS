@@ -66,16 +66,16 @@ void main() {
     // Load elf image from sd card first
     // dd if=[elf image] of=/dev/sd[x] seek=1024 bs=512
     // sec  name    size
-    // 51000 fstest  101200
-    // 52000 serv    130352
+    // 51000 fstest  101388
+    // 52000 serv    130542
 
     // fstest
     load_program(51000);
-    env_create(program, 101334);
+    env_create(program, 101388);
 
     // serv
     load_program(52000);
-    env_create(program, 130488);
+    env_create(program, 130542);
 
     kclock_init();
     printf("kclock_init done.\n");

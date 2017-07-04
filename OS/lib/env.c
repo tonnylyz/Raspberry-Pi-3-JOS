@@ -175,7 +175,7 @@ void env_run(struct Env *e) {
     curenv = e;
     bcopy(&curenv->env_tf, old, sizeof(struct Trapframe));
     set_ttbr0((u_long) curenv->env_pgdir);
-    printf("env_run #%x run @[%l016x] sp [%l016x]\n", curenv->env_id, curenv->env_tf.elr, curenv->env_tf.sp);
+    //printf("env_run #%x run @[%l016x] sp [%l016x]\n", curenv->env_id, curenv->env_tf.elr, curenv->env_tf.sp);
     tlb_invalidate();
     usleep(20000); // wait for tlb flush?
 }

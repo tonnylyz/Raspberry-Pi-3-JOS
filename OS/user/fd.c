@@ -147,9 +147,9 @@ int write(int fdnum, const void *buf, u_int n) {
         writef("[%08x] write %d -- bad mode\n", env->env_id, fdnum);
         return -E_INVAL;
     }
-    writef("write #%d\n", __LINE__);
+    DUMMY;
     r = (*dev->dev_write)(fd, buf, n, fd->fd_offset);
-    writef("write #%d\n", __LINE__);
+    DUMMY;
     if (r > 0) {
         fd->fd_offset += r;
     }

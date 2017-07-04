@@ -31,23 +31,23 @@ void umain() {
         user_panic("ftruncate: %d", r);
     }
 
-    writef("fstest %d\n", __LINE__);
+    DUMMY;
 
     seek(fdnum, 0);
 
-    writef("fstest %d\n", __LINE__);
+    DUMMY;
 
     if ((r = write(fdnum, msg, strlen(msg))) < 0) {
         user_panic("write /newmotd: %d", r);
     }
 
-    writef("fstest %d\n", __LINE__);
+    DUMMY;
 
     if ((r = close(fdnum)) < 0) {
         user_panic("close /newmotd: %d", r);
     }
 
-    writef("fstest %d\n", __LINE__);
+    DUMMY;
 
     //read again
     if ((r = open("/newmotd", O_RDONLY)) < 0) {

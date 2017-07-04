@@ -23,7 +23,7 @@ void fs_test(void) {
 	}
 	bits = (u_long *) BY2PG;
 	user_bcopy(bitmap, bits, BY2PG);
-    writef("fs_test got here %d\n", __LINE__);
+	DUMMY;
 	if ((r = alloc_block()) < 0) {
 		user_panic("alloc_block: %e", r);
 	}
@@ -43,8 +43,7 @@ void fs_test(void) {
 		user_panic("file_get_block: %e", r);
 	}
 
-	writef("fs_test got here %d\n", __LINE__);
-    writef("blk [%l016x] msg [%l016x]\n", blk, msg);
+	DUMMY;
 	if (strecmp(blk, msg) != 0) {
 		user_panic("file_get_block returned wrong data");
 	}
@@ -134,24 +133,22 @@ void serve_open(u_int envid, struct Fsreq_open *rq)
 	u_char path[MAXPATHLEN];
 	struct File *f;
 	struct Filefd *ff;
-	//int fileid;
-    writef("#%d\n", __LINE__);
-
+    DUMMY;
 	int r;
 	struct Open *o;
 	user_bcopy(rq->req_path, path, MAXPATHLEN);
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	path[MAXPATHLEN - 1] = 0;
 	if ((r = open_alloc(&o)) < 0) {
 		writef("open_alloc failed: %d, invalid path: %s", r, path);
 		ipc_send(envid, r, 0, 0);
 	}
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	if ((r = file_open((char *)path, &f)) < 0) {
 		writef("file_open failed: %d, invalid path: %s", r, path);
 		ipc_send(envid, r, 0, 0);
 	}
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	o->o_file = f;
 	ff = (struct Filefd *)o->o_ff;
 	ff->f_file = *f;
@@ -159,29 +156,29 @@ void serve_open(u_int envid, struct Fsreq_open *rq)
 	o->o_mode = rq->req_omode;
 	ff->f_fd.fd_omode = o->o_mode;
 	ff->f_fd.fd_dev_id = devfile.dev_id;
-    writef("#%d\n", __LINE__);
+	DUMMY;
 	ipc_send(envid, 0, (u_long)o->o_ff, PTE_V | ATTRIB_AP_RW_ALL);
 }
 
 void serve_map(u_int envid, struct Fsreq_map *rq)
 {
-    writef("serve_map %08x %x\n", envid, (u_long)rq->req_fileid);
+    //writef("serve_map %08x %x\n", envid, (u_long)rq->req_fileid);
 	struct Open *pOpen;
 	u_int filebno;
 	void *blk;
 	int r;
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	if ((r = open_lookup(envid, rq->req_fileid, &pOpen)) < 0) {
 		ipc_send(envid, r, 0, 0);
 		return;
 	}
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	filebno = rq->req_offset / BY2BLK;
 	if ((r = file_get_block(pOpen->o_file, filebno, &blk)) < 0) {
 		ipc_send(envid, r, 0, 0);
 		return;
 	}
-    writef("#%d\n", __LINE__);
+    DUMMY;
 	ipc_send(envid, 0, (u_long)blk, PTE_V | ATTRIB_AP_RW_ALL);
 }
 
@@ -245,12 +242,11 @@ void serve_sync(u_int envid)
 
 void serve(void)
 {
-    writef("fs serve stared!\n");
+    //writef("FS Service started!\n");
 	u_long req = 0, whom = 0, perm = 0;
 	for (;;) {
 		perm = 0;
 		req = ipc_recv(&whom, REQVA, &perm);
-        writef("serve ipc_recv done.");
 		if (!(perm & PTE_V)) {
 			writef("Invalid request from %08x: no argument page\n", whom);
 			continue;

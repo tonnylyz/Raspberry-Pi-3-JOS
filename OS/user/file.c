@@ -141,7 +141,6 @@ static int file_stat(struct Fd *fd, struct Stat *st) {
 }
 
 int ftruncate(int fdnum, u_int size) {
-    writef("enter ftruncate\n");
     int i, r;
     struct Fd *fd;
     struct Filefd *f;
@@ -174,7 +173,6 @@ int ftruncate(int fdnum, u_int size) {
             user_panic("ftruncate: syscall_mem_unmap %08x: %e", va + i, r);
         }
 
-    writef("done ftruncate\n");
     return 0;
 }
 

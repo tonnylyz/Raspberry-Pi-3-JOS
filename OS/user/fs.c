@@ -1,5 +1,10 @@
 #include <fs.h>
 
+static void dummy(u_long a) {
+    a++;
+    return;
+}
+
 struct Super *super;
 
 u_int nbitmap;
@@ -69,14 +74,14 @@ int read_block(u_int blockno, void **blk, u_int *isnew) {
         syscall_emmc_read(blockno * SECT2BLK, va);
     }
     if (blk) {
-        // here makes a bug ?
-        writef("read_block blk [%l016x]\n", blk);
+        DUMMY;
         *blk = (void *) (u_long)va;
     }
     return 0;
 }
 
 void write_block(u_int blockno) {
+    // TODO: Not support write!
     return;
     u_int va;
     if (!block_is_mapped(blockno)) {
@@ -131,7 +136,7 @@ int alloc_block(void) {
 
 void read_super(void) {
     int r;
-    void *blk;
+    void *blk = 0;
     if ((r = read_block(1, &blk, 0)) < 0) {
         user_panic("cannot read superblock: %e", r);
     }
@@ -147,7 +152,7 @@ void read_super(void) {
 
 void read_bitmap(void) {
     u_int i;
-    void *blk;
+    void *blk = 0;
     nbitmap = super->s_nblocks / BIT2BLK + 1;
     for (i = 0; i < nbitmap; i++) {
         read_block(i + 2, &blk, 0);
