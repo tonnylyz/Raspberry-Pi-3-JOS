@@ -69,3 +69,7 @@ u_long syscall_pgtable_entry(u_long va) {
 u_int syscall_fork() {
     return (long)msyscall(16, 0, 0, 0, 0, 0);
 }
+
+void syscall_emmc_read(u_long sector, u_long va) {
+    msyscall(17, sector, va, 0, 0, 0);
+}

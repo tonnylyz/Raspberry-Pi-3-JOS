@@ -7,14 +7,21 @@ USERLIB := printf.o \
 		syscall.o \
 		syscall_lib.o \
 		ipc.o \
-		string.o
+		string.o \
+		fd.o \
+		file.o \
+		fs.o \
+		fsipc.o \
+		pageref.o
 
-CROSS  := /home/tonny/linaro-elf/bin/aarch64-elf-
-CFLAGS := -Wall -ffreestanding -nostdlib -static
+CROSS  := /home/tonny/linaro/bin/aarch64-none-elf-
+CFLAGS := -Wall -ffreestanding
 CC     := $(CROSS)gcc
 LD     := $(CROSS)ld
 
-all: lab3 lab4
+all: lab5
+
+lab5: serv.elf fstest.elf $(USERLIB) entry.o
 
 lab4: fktest.elf pingpong.elf $(USERLIB) entry.o
 
@@ -25,7 +32,7 @@ lab3: pitesta.o pitestb.o pitestc.o syscall.o syscall_lib.o string.o print.o pri
 
 %.elf: entry.o %.o $(USERLIB)
 	echo ld $@
-	$(LD) -o $@ -e _start -G 0 -static -n -nostdlib $^
+	$(LD) -o $@ -e _start $^
 
 %.o: %.c
 	echo user1 cc $<

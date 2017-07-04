@@ -1,7 +1,15 @@
 .data
 .global envs
 envs:
-	.word 0x90000000
+	.dword 0x0000000090000000
+.global pages
+pages:
+	.dword 0x00000000a0000000
+.p2align 12
+.global fsipcbuf
+fsipcbuf:
+    .space 4096
+
 
 .extern libmain
 

@@ -173,6 +173,7 @@ el1_sync_syscall:
     syscall_entry sys_cgetc, #14, x20
     syscall_entry sys_pgtable_entry, #15, x20
     syscall_entry sys_fork, #16, x20
+    syscall_entry sys_emmc_read, #17, x20
     ldr x19, =0xFFFFFF0001000000
     mov sp, x19
     syscall_entry sys_yield, #2, x20

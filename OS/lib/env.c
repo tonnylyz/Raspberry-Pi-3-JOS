@@ -62,6 +62,10 @@ static int env_setup_vm(struct Env *e) {
         page_insert((u_long *)KADDR(e->env_pgdir), pa2page(0x01700000 + va - UENVS), va, ATTRIB_AP_RO_ALL);
     }
 
+    for (va = UPAGES; va < UPAGES + ROUND(NPAGE * sizeof(struct Page), BY2PG); va += BY2PG) {
+        page_insert((u_long *)KADDR(e->env_pgdir), pa2page(0x01400000 + va - UENVS), va, ATTRIB_AP_RO_ALL);
+    }
+
     return 0;
 }
 
@@ -171,7 +175,7 @@ void env_run(struct Env *e) {
     curenv = e;
     bcopy(&curenv->env_tf, old, sizeof(struct Trapframe));
     set_ttbr0((u_long) curenv->env_pgdir);
+    printf("env_run #%x run @[%l016x] sp [%l016x]\n", curenv->env_id, curenv->env_tf.elr, curenv->env_tf.sp);
     tlb_invalidate();
-    usleep(2000); // wait for tlb flush?
-    //printf("env_run #%x run @[%l016x]\n", curenv->env_id, curenv->env_tf.elr);
+    usleep(20000); // wait for tlb flush?
 }

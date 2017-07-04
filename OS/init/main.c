@@ -31,11 +31,11 @@ u64 get_far() {
     return r;
 }
 
-u_char program[102400]; // 512 * 200
+u_char program[512 * 300];
 void load_program(u_int sector) {
     int i;
     u_int pos = 0;
-    for (i = 0; i < 200; i++)
+    for (i = 0; i < 300; i++)
     {
         u_char buf[512];
         emmc_read_sector(sector + i, buf);
@@ -66,16 +66,16 @@ void main() {
     // Load elf image from sd card first
     // dd if=[elf image] of=/dev/sd[x] seek=1024 bs=512
     // sec  name    size
-    // 1024 pitesta 75000
-    // 2048 pitestb 75000
-    // 2400 pitestc 76056
-    // 3000 fktest  77736
-    // 3500 pingpong 77904
-    load_program(3500);
-    env_create(program, 77904);
+    // 51000 fstest  101200
+    // 52000 serv    130352
 
-    //load_program(3000);
-    //env_create(program, 77736);
+    // fstest
+    load_program(51000);
+    env_create(program, 101334);
+
+    // serv
+    load_program(52000);
+    env_create(program, 130488);
 
     kclock_init();
     printf("kclock_init done.\n");
@@ -103,10 +103,7 @@ extern void user_pgfault_handler(u64 function, u64 xstacktop, u64 ret);
 void handle_pgfault() {
     printf("\n[System Exception]\n");
     printf("Page fault : va : [%l016x]\n", get_far());
-
-    u_long va = get_far();
-
-
+    printf("esr : [%08x]\n", get_esr());
     while (1) {
         empty_loop(0);
     }
@@ -115,7 +112,7 @@ void handle_pgfault() {
 void handle_err() {
     printf("\n[System Exception]\n");
     printf("Kernel died\n");
-    printf("esr : [%32b]\n", (unsigned int)get_esr());
+    printf("esr : [%08x]\n", get_esr());
     printf("far : [%l016x]\n", get_far());
     while (1) {
         empty_loop(0);

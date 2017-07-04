@@ -1,4 +1,5 @@
 #include "pmap.h"
+#include <drivers/include/timer.h>
 struct Page *pages = (struct Page *)KERNEL_PAGES;
 static struct Page_list page_free_list;
 
@@ -115,6 +116,7 @@ int page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm) {
     }
     *pgtable_entry = (PTE_ADDR(page2pa(pp)) | PERM);
     tlb_invalidate();
+    usleep(2000); // wait for tlb flush?
     pp->pp_ref++;
     return 0;
 }
@@ -155,6 +157,7 @@ void page_remove(Pde *pgdir, u_long va) {
     }
     *pagetable_entry = 0;
     tlb_invalidate();
+    usleep(2000); // wait for tlb flush?
 }
 
 

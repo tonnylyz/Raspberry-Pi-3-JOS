@@ -33,8 +33,9 @@
 #define KERNBASE     KADDR(0x00080000)
 
 #define UTOP         (0xffffffff)
-#define USTACKTOP    (0x80000000)
+#define USTACKTOP    (0x01000000)
 #define UENVS        (0x90000000)
+#define UPAGES       (0xa0000000)
 
 #define PTE_V                     (0x3 << 0)    // Table Entry Valid bit
 #define PBE_V                     (0x1 << 0)    // Block Entry Valid bit

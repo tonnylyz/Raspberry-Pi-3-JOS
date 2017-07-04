@@ -1,4 +1,5 @@
 #include <drivers/include/uart.h>
+#include <drivers/include/emmc.h>
 #include <mmu.h>
 #include <env.h>
 #include <printf.h>
@@ -64,7 +65,9 @@ int sys_mem_alloc(int sysno, u_int envid, u_long va, u_long perm) {
         return ret;
     }
     bzero((void *)page2kva(ppage), BY2PG);
-    ret = page_insert(env->env_pgdir, ppage, va, perm | PTE_V | ATTRIB_AP_RW_ALL);
+    ret = page_insert((u_long *)KADDR(env->env_pgdir), ppage, va, perm | PTE_V | ATTRIB_AP_RW_ALL);
+
+    usleep(20000);
     if (ret < 0) {
         printf("[ERR] sys_mem_alloc page_insert\n");
         return ret;
@@ -95,7 +98,7 @@ int sys_mem_map(int sysno, u_int srcid, u_long srcva, u_int dstid, u_long dstva,
         printf("[ERR] sys_mem_map : page_lookup : [%l016x] : [%l016x] : [%l016x]\n", srcenv->env_pgdir, srcva, &ppte);
         return -1;
     }
-    ret = page_insert(dstenv->env_pgdir, ppage, dstva, perm);
+    ret = page_insert((u_long *)KADDR(dstenv->env_pgdir), ppage, dstva, perm);
     if (ret < 0) {
         printf("[ERR] sys_mem_map page_insert\n");
         return ret;
@@ -170,6 +173,13 @@ int sys_ipc_can_send(int sysno, u_int envid, u_long value, u_long srcva, u_long 
         return -E_IPC_NOT_RECV;
     }
 
+    if (srcva != 0 && e->env_ipc_dstva != 0) {
+        Pte *pte;
+        struct Page *p = page_lookup((u_long *)KADDR(curenv->env_pgdir), srcva, &pte);
+        page_insert((u_long *)KADDR(e->env_pgdir), p, e->env_ipc_dstva, perm);
+        e->env_ipc_perm = perm;
+    }
+
     e->env_ipc_recving = 0;
     e->env_ipc_from = curenv->env_id;
     e->env_ipc_value = value;
@@ -200,7 +210,6 @@ u_int sys_fork() {
     struct Page *pp;
     envid = sys_env_alloc();
     envid2env(envid, &e, 0);
-
     for (va = 0; va < USTACKTOP; va += BY2PG) {
         p = page_lookup((u_long *)KADDR(curenv->env_pgdir), va, &pte);
         if (p == NULL)
@@ -211,4 +220,19 @@ u_int sys_fork() {
     }
     e->env_status = ENV_RUNNABLE;
     return envid;
+}
+
+void sys_emmc_read(int sysno, u_long sector, u_long va) {
+    struct Page *page;
+    page_alloc(&page);
+    u_char *buf = (u_char *)page2kva(page);
+    u_int sec;
+    // place fs.img at sector BASE
+    u_int sector_offset = 54000 + sector;
+    for (sec = 0; sec < 8; sec ++) {
+        emmc_read_sector(sec + sector_offset, buf + sec * 512);
+    }
+    page_insert(curenv->env_pgdir, page, va, ATTRIB_AP_RW_ALL);
+    usleep(20000);
+    //printf("sys_emmc_read map sector #%d to [%l016x]\n", sector, va);
 }

@@ -13,7 +13,9 @@ void libmain(int argc, char **argv) {
     int envid;
     envid = syscall_getenvid();
     envid = ENVX(envid);
+    envs = (struct Env *)((u_long)UENVS & 0xFFFFFFFF);
     env = &envs[envid];
+    env = (struct Env *)((u_long)env & 0xFFFFFFFF);
     umain(argc, argv);
     exit();
 }
